@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NameForge — AI Business Name Generator</title>
+<meta name="description" content="Generate creative business names with AI. Get domain suggestions, taglines, and branding — all in seconds.">
+<meta property="og:title" content="NameForge — Name your next big thing">
+<meta property="og:description" content="AI-powered business name generator with domain check, taglines, and brand kits.">
+<meta property="og:type" content="website">
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = {
+  theme: {
+    extend: {
+      colors: {
+        forge: { 50:'#fef3c7',100:'#fde68a',200:'#fcd34d',300:'#fbbf24',400:'#f59e0b',500:'#d97706',600:'#b45309',700:'#92400e',800:'#78350f',900:'#451a03' },
+        dark: { 50:'#1a1a2e',100:'#16162a',200:'#121226',300:'#0e0e22',400:'#0a0a1e',500:'#0a0a0a' }
+      }
+    }
+  }
+}
+</script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:'Inter',sans-serif;background:#0a0a0a;color:#e2e8f0;overflow-x:hidden}
+.gradient-bg{background:linear-gradient(180deg,#0a0a0a 0%,#0f0f23 40%,#1a1a2e 100%)}
+.hero-glow{position:absolute;width:600px;height:600px;border-radius:50%;background:radial-gradient(circle,rgba(245,158,11,0.08) 0%,transparent 70%);top:-200px;left:50%;transform:translateX(-50%);pointer-events:none}
+.card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);border-radius:16px;backdrop-filter:blur(10px);transition:all .3s ease}
+.card:hover{border-color:rgba(245,158,11,0.2);background:rgba(255,255,255,0.05);transform:translateY(-2px)}
+.btn-primary{background:linear-gradient(135deg,#f59e0b,#d97706);color:#0a0a0a;font-weight:700;border:none;border-radius:12px;cursor:pointer;transition:all .3s ease}
+.btn-primary:hover{transform:translateY(-1px);box-shadow:0 8px 30px rgba(245,158,11,0.3)}
+.btn-primary:active{transform:translateY(0)}
+.name-card{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:20px;cursor:pointer;transition:all .3s ease}
+.name-card:hover{border-color:rgba(245,158,11,0.3);background:rgba(245,158,11,0.05)}
+.name-card.expanded{border-color:rgba(245,158,11,0.4);background:rgba(245,158,11,0.08)}
+.badge{display:inline-flex;align-items:center;gap:4px;padding:2px 10px;border-radius:20px;font-size:12px;font-weight:500}
+.badge-available{background:rgba(34,197,94,0.15);color:#4ade80;border:1px solid rgba(34,197,94,0.2)}
+.badge-taken{background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.2)}
+.badge-premium{background:rgba(168,85,247,0.15);color:#c084fc;border:1px solid rgba(168,85,247,0.2)}
+.color-dot{width:24px;height:24px;border-radius:50%;border:2px solid rgba(255,255,255,0.1)}
+.pulse{animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+.fade-in{animation:fadeIn .5s ease forwards;opacity:0}
+@keyframes fadeIn{to{opacity:1}}
+.stagger-1{animation-delay:.1s}.stagger-2{animation-delay:.2s}.stagger-3{animation-delay:.3s}
+.stagger-4{animation-delay:.4s}.stagger-5{animation-delay:.5s}.stagger-6{animation-delay:.6s}
+.stagger-7{animation-delay:.7s}.stagger-8{animation-delay:.8s}.stagger-9{animation-delay:.9s}
+.shimmer{background:linear-gradient(90deg,rgba(255,255,255,0) 0%,rgba(255,255,255,0.05) 50%,rgba(255,255,255,0) 100%);background-size:200% 100%;animation:shimmer 1.5s infinite}
+@keyframes shimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+.pricing-popular{border:2px solid #f59e0b;position:relative}
+.pricing-popular::before{content:'Most Popular';position:absolute;top:-14px;left:50%;transform:translateX(-50%);background:linear-gradient(135deg,#f59e0b,#d97706);color:#0a0a0a;padding:4px 16px;border-radius:20px;font-size:12px;font-weight:700}
+input[type="text"],input[type="email"]{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#e2e8f0;font-family:'Inter',sans-serif}
+input[type="text"]:focus,input[type="email"]:focus{outline:none;border-color:rgba(245,158,11,0.5);box-shadow:0 0 0 3px rgba(245,158,11,0.1)}
+::selection{background:rgba(245,158,11,0.3);color:#fff}
+.check-icon{color:#4ade80}
+.x-icon{color:#f87171}
+::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:#0a0a0a}::-webkit-scrollbar-thumb{background:#333;border-radius:4px}
+</style>
+</head>
+<body class="gradient-bg">
+
+<!-- Hero -->
+<section class="relative min-h-screen flex flex-col items-center justify-center px-4 pt-20 pb-16">
+  <div class="hero-glow"></div>
+  <nav class="fixed top-0 w-full z-50 flex items-center justify-between px-6 py-4" style="background:rgba(10,10,10,0.8);backdrop-filter:blur(20px);border-bottom:1px solid rgba(255,255,255,0.05)">
+    <div class="flex items-center gap-2">
+      <span class="text-2xl">🔥</span>
+      <span class="text-xl font-bold bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">NameForge</span>
+    </div>
+    <div class="hidden md:flex items-center gap-8 text-sm text-gray-400">
+      <a href="#demo" class="hover:text-amber-400 transition">Demo</a>
+      <a href="#features" class="hover:text-amber-400 transition">Features</a>
+      <a href="#pricing" class="hover:text-amber-400 transition">Pricing</a>
+      <a href="#waitlist" class="btn-primary px-5 py-2 text-sm">Get Early Access</a>
+    </div>
+  </nav>
+
+  <div class="text-center max-w-4xl mx-auto relative z-10">
+    <div class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm mb-8" style="background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2);color:#fbbf24">
+      <span>✨</span> AI-powered naming for modern founders
+    </div>
+    <h1 class="text-5xl md:text-7xl font-black mb-6 leading-tight">
+      Name your next<br>
+      <span class="bg-gradient-to-r from-amber-400 via-orange-400 to-amber-500 bg-clip-text text-transparent">big thing</span>
+    </h1>
+    <p class="text-lg md:text-xl text-gray-400 mb-12 max-w-2xl mx-auto leading-relaxed">
+      Describe your business in a sentence. Get AI-generated names with domain availability, taglines, and branding suggestions — instantly.
+    </p>
+
+    <div class="max-w-2xl mx-auto">
+      <div class="flex flex-col sm:flex-row gap-3">
+        <input id="heroInput" type="text" placeholder='e.g. "AI tool for writing better emails"' 
+          class="flex-1 px-6 py-4 rounded-xl text-base" 
+          onkeydown="if(event.key==='Enter')generateNames()">
+        <button onclick="generateNames()" class="btn-primary px-8 py-4 text-base whitespace-nowrap flex items-center gap-2">
+          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+          Generate Names
+        </button>
+      </div>
+      <p class="text-xs text-gray-500 mt-3">Free — no signup required. Try it now!</p>
+    </div>
+  </div>
+
+  <!-- Scroll indicator -->
+  <div class="absolute bottom-8 left-1/2 -translate-x-1/2 text-gray-500 animate-bounce">
+    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3"/></svg>
+  </div>
+</section>
+
+<!-- Interactive Demo / Results -->
+<section id="demo" class="px-4 pb-24">
+  <div id="resultsContainer" class="max-w-5xl mx-auto hidden">
+    <div class="text-center mb-10">
+      <h2 class="text-3xl font-bold mb-2">Your names are ready 🎉</h2>
+      <p id="resultsSubtitle" class="text-gray-400">Click any name to see branding details</p>
+    </div>
+    <div id="resultsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+    <div class="text-center mt-8">
+      <button onclick="generateNames()" class="btn-primary px-8 py-3 text-sm">🔄 Regenerate</button>
+    </div>
+  </div>
+
+  <!-- Loading state -->
+  <div id="loadingState" class="max-w-5xl mx-auto hidden">
+    <div class="text-center py-20">
+      <div class="text-4xl mb-4 pulse">🔥</div>
+      <p class="text-lg text-gray-400">Forging names...</p>
+      <div class="flex gap-2 justify-center mt-6">
+        <div class="w-2 h-2 rounded-full bg-amber-400 animate-bounce" style="animation-delay:0s"></div>
+        <div class="w-2 h-2 rounded-full bg-amber-400 animate-bounce" style="animation-delay:.15s"></div>
+        <div class="w-2 h-2 rounded-full bg-amber-400 animate-bounce" style="animation-delay:.3s"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- How It Works -->
+<section class="px-4 py-24">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-4xl font-bold mb-4">How it works</h2>
+      <p class="text-gray-400 text-lg">From idea to brand in 60 seconds</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      <div class="text-center">
+        <div class="w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center text-3xl" style="background:rgba(245,158,11,0.1)">💬</div>
+        <div class="text-sm text-amber-400 font-semibold mb-2">Step 1</div>
+        <h3 class="text-xl font-bold mb-3">Describe</h3>
+        <p class="text-gray-400">Tell us what your business does in one sentence. The more specific, the better the names.</p>
+      </div>
+      <div class="text-center">
+        <div class="w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center text-3xl" style="background:rgba(245,158,11,0.1)">⚡</div>
+        <div class="text-sm text-amber-400 font-semibold mb-2">Step 2</div>
+        <h3 class="text-xl font-bold mb-3">Generate</h3>
+        <p class="text-gray-400">Our AI creates 10 unique names with domains, taglines, and brand suggestions in seconds.</p>
+      </div>
+      <div class="text-center">
+        <div class="w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center text-3xl" style="background:rgba(245,158,11,0.1)">🚀</div>
+        <div class="text-sm text-amber-400 font-semibold mb-2">Step 3</div>
+        <h3 class="text-xl font-bold mb-3">Launch</h3>
+        <p class="text-gray-400">Pick your favorite, export the brand kit, register the domain, and start building.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Features Grid -->
+<section id="features" class="px-4 py-24" style="background:rgba(255,255,255,0.01)">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-4xl font-bold mb-4">Everything you need to name & brand</h2>
+      <p class="text-gray-400 text-lg">One tool to replace a $5K branding agency</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div class="card p-8">
+        <div class="text-3xl mb-4">🧠</div>
+        <h3 class="text-lg font-bold mb-2">AI Name Generation</h3>
+        <p class="text-gray-400 text-sm leading-relaxed">6 naming strategies — compound words, portmanteaus, abstract brandable, domain-style, metaphors, and action words.</p>
+      </div>
+      <div class="card p-8">
+        <div class="text-3xl mb-4">🌐</div>
+        <h3 class="text-lg font-bold mb-2">Domain Availability</h3>
+        <p class="text-gray-400 text-sm leading-relaxed">Instant .com, .io, .ai, and .co domain checks. Know what's available before you commit.</p>
+      </div>
+      <div class="card p-8">
+        <div class="text-3xl mb-4">💬</div>
+        <h3 class="text-lg font-bold mb-2">Tagline Generator</h3>
+        <p class="text-gray-400 text-sm leading-relaxed">Every name comes with a custom tagline that captures your brand essence.</p>
+      </div>
+      <div class="card p-8">
+        <div class="text-3xl mb-4">🎯</div>
+        <h3 class="text-lg font-bold mb-2">Brand Voice Matching</h3>
+        <p class="text-gray-400 text-sm leading-relaxed">Professional, playful, or bold? Get names and messaging that match your vibe.</p>
+      </div>
+      <div class="card p-8">
+        <div class="text-3xl mb-4">🎨</div>
+        <h3 class="text-lg font-bold mb-2">Logo Color Palettes</h3>
+        <p class="text-gray-400 text-sm leading-relaxed">Curated color combos for every name. Copy hex codes and start designing immediately.</p>
+      </div>
+      <div class="card p-8">
+        <div class="text-3xl mb-4">📦</div>
+        <h3 class="text-lg font-bold mb-2">Export Brand Kit</h3>
+        <p class="text-gray-400 text-sm leading-relaxed">Download a complete brand kit — name, domain, tagline, colors, voice, and audience — as a PDF.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Pricing -->
+<section id="pricing" class="px-4 py-24">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-center mb-16">
+      <h2 class="text-3xl md:text-4xl font-bold mb-4">Simple, founder-friendly pricing</h2>
+      <p class="text-gray-400 text-lg">Start free. Upgrade when you're addicted.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+      <!-- Free -->
+      <div class="card p-8">
+        <h3 class="text-lg font-semibold mb-1">Free</h3>
+        <div class="text-4xl font-black mb-1">$0</div>
+        <p class="text-gray-500 text-sm mb-6">Forever free</p>
+        <ul class="space-y-3 text-sm text-gray-300 mb-8">
+          <li class="flex items-center gap-2"><span class="check-icon">✓</span> 3 generations/day</li>
+          <li class="flex items-center gap-2"><span class="check-icon">✓</span> 10 names per generation</li>
+          <li class="flex items-center gap-2"><span class="check-icon">✓</span> Basic name styles</li>
+          <li class="flex items-center gap-2"><span class="check-icon">✓</span> Domain suggestions</li>
+          <li class="flex items-center gap-2"><span class="x-icon">✗</span> <span class="text-gray-500">Taglines</span></li>
+          <li class="flex items-center gap-2"><span class="x-icon">✗</span> <span class="text-gray-500">Brand kits</span></li>
+        </ul>
+        <button class="w-full py-3 rounded-xl font-semibold text-sm border border-gray-700 text-gray-300 hover:border-amber-400 hover:text-amber-400 transition">Get Started</button>
+      </div>
+      <!-- Pro -->
+      <div class="card p-8 pricing-popular">
+        <h3 class="text-lg font-semibold mb-1">Pro</h3>
+        <div class="text-4xl font-black mb-1">$9<span class="text-lg font-normal text-gray-400">/mo</span></div>
+        <p class="text-gray-500 text-sm mb-6">For serious builders</p>
+        <ul class="space-y-3 text-sm text-gray-300 mb-8">
+          <li class="flex items-center gap-2"><span class="check-icon">✓</span> Unlimited generations</li>
+          <li class="flex items-center gap-2"><span class="check-icon">✓</span> Real domain availability</li>
+          <li class="flex items-center gap-2"><span class="check-icon">✓</span> AI taglines</li>
+          <li class="flex items-center gap-2"><span class="check-icon">✓</span> Brand voice matching</li>
+          <li class="flex items-center gap-2"><span class="check-icon">✓</span> Color palettes</li>
+          <li class="flex items-center gap-2"><span class="check-icon">✓</span> Export brand kits</li>
+        </ul>
+        <button class="btn-primary w-full py-3 text-sm">Start Pro Trial</button>
+      </div>
+      <!-- Agency -->
+      <div class="card p-8">
+        <h3 class="text-lg font-semibold mb-1">Agency</h3>
+        <div class="text-4xl font-black mb-1">$19<span class="text-lg font-normal text-gray-400">/mo</span></div>
+        <p class="text-gray-500 text-sm mb-6">For teams & agencies</p>
+        <ul class="space-y-3 text-sm text-gray-300 mb-8">
+          <li class="flex items-center gap-2"><span class="check-icon">✓</span> Everything in Pro</li>
+          <li class="flex items-center gap-2"><span class="check-icon">✓</span> Team access (5 seats)</li>
+          <li class="flex items-center gap-2"><span class="check-icon">✓</span> Client workspaces</li>
+          <li class="flex items-center gap-2"><span class="check-icon">✓</span> White-label exports</li>
+          <li class="flex items-center gap-2"><span class="check-icon">✓</span> Bulk generation (50/query)</li>
+          <li class="flex items-center gap-2"><span class="check-icon">✓</span> Priority support</li>
+        </ul>
+        <button class="w-full py-3 rounded-xl font-semibold text-sm border border-gray-700 text-gray-300 hover:border-amber-400 hover:text-amber-400 transition">Contact Sales</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Comparison Table -->
+<section class="px-4 py-24" style="background:rgba(255,255,255,0.01)">
+  <div class="max-w-4xl mx-auto">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl md:text-4xl font-bold mb-4">Why NameForge?</h2>
+      <p class="text-gray-400 text-lg">See how we compare</p>
+    </div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-sm">
+        <thead>
+          <tr class="border-b border-gray-800">
+            <th class="text-left py-4 px-4 text-gray-400 font-medium">Feature</th>
+            <th class="py-4 px-4 text-center"><span class="text-amber-400 font-bold">NameForge</span></th>
+            <th class="py-4 px-4 text-center text-gray-400">Namelix</th>
+            <th class="py-4 px-4 text-center text-gray-400">Squadhelp</th>
+            <th class="py-4 px-4 text-center text-gray-400">BrandBucket</th>
+            <th class="py-4 px-4 text-center text-gray-400">Shopify</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="border-b border-gray-800/50"><td class="py-3 px-4">Price</td><td class="py-3 px-4 text-center font-semibold text-amber-400">$0-19/mo</td><td class="py-3 px-4 text-center">Free</td><td class="py-3 px-4 text-center">$199-999</td><td class="py-3 px-4 text-center">$1K-75K</td><td class="py-3 px-4 text-center">Free</td></tr>
+          <tr class="border-b border-gray-800/50"><td class="py-3 px-4">AI Names</td><td class="py-3 px-4 text-center check-icon">✓</td><td class="py-3 px-4 text-center check-icon">✓</td><td class="py-3 px-4 text-center text-gray-500">Human</td><td class="py-3 px-4 text-center text-gray-500">Curated</td><td class="py-3 px-4 text-center x-icon">✗</td></tr>
+          <tr class="border-b border-gray-800/50"><td class="py-3 px-4">Domain Check</td><td class="py-3 px-4 text-center check-icon">✓</td><td class="py-3 px-4 text-center x-icon">✗</td><td class="py-3 px-4 text-center check-icon">✓</td><td class="py-3 px-4 text-center check-icon">✓</td><td class="py-3 px-4 text-center x-icon">✗</td></tr>
+          <tr class="border-b border-gray-800/50"><td class="py-3 px-4">Taglines</td><td class="py-3 px-4 text-center check-icon">✓</td><td class="py-3 px-4 text-center x-icon">✗</td><td class="py-3 px-4 text-center x-icon">✗</td><td class="py-3 px-4 text-center x-icon">✗</td><td class="py-3 px-4 text-center x-icon">✗</td></tr>
+          <tr class="border-b border-gray-800/50"><td class="py-3 px-4">Brand Voice</td><td class="py-3 px-4 text-center check-icon">✓</td><td class="py-3 px-4 text-center x-icon">✗</td><td class="py-3 px-4 text-center x-icon">✗</td><td class="py-3 px-4 text-center x-icon">✗</td><td class="py-3 px-4 text-center x-icon">✗</td></tr>
+          <tr class="border-b border-gray-800/50"><td class="py-3 px-4">Color Palettes</td><td class="py-3 px-4 text-center check-icon">✓</td><td class="py-3 px-4 text-center x-icon">✗</td><td class="py-3 px-4 text-center x-icon">✗</td><td class="py-3 px-4 text-center x-icon">✗</td><td class="py-3 px-4 text-center x-icon">✗</td></tr>
+          <tr class="border-b border-gray-800/50"><td class="py-3 px-4">Brand Kit Export</td><td class="py-3 px-4 text-center check-icon">✓</td><td class="py-3 px-4 text-center x-icon">✗</td><td class="py-3 px-4 text-center x-icon">✗</td><td class="py-3 px-4 text-center x-icon">✗</td><td class="py-3 px-4 text-center x-icon">✗</td></tr>
+          <tr><td class="py-3 px-4">No Ads</td><td class="py-3 px-4 text-center check-icon">✓</td><td class="py-3 px-4 text-center x-icon">✗</td><td class="py-3 px-4 text-center check-icon">✓</td><td class="py-3 px-4 text-center check-icon">✓</td><td class="py-3 px-4 text-center check-icon">✓</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- Waitlist CTA -->
+<section id="waitlist" class="px-4 py-24">
+  <div class="max-w-2xl mx-auto text-center">
+    <div class="text-5xl mb-6">🔥</div>
+    <h2 class="text-3xl md:text-4xl font-bold mb-4">Get early access</h2>
+    <p class="text-gray-400 text-lg mb-8">Join the waitlist for Pro features. Free tier is available now — try the demo above!</p>
+    <div class="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
+      <input id="waitlistEmail" type="email" placeholder="you@startup.com" class="flex-1 px-6 py-4 rounded-xl text-base">
+      <button onclick="joinWaitlist()" class="btn-primary px-8 py-4 text-base whitespace-nowrap">Get Early Access</button>
+    </div>
+    <p id="waitlistMsg" class="text-sm mt-4 hidden"></p>
+    <p id="waitlistCount" class="text-xs text-gray-500 mt-3"></p>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer class="px-4 py-12 border-t border-gray-800/50">
+  <div class="max-w-5xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4 text-sm text-gray-500">
+    <div class="flex items-center gap-2">
+      <span>🔥</span>
+      <span class="font-semibold text-gray-400">NameForge</span>
+      <span>— Built by</span>
+      <a href="https://atalovesyou.github.io/opensphere-labs/" target="_blank" class="text-amber-400 hover:underline">OpenSphere Labs</a>
+    </div>
+    <div class="flex items-center gap-6">
+      <a href="#demo" class="hover:text-gray-300 transition">Demo</a>
+      <a href="#features" class="hover:text-gray-300 transition">Features</a>
+      <a href="#pricing" class="hover:text-gray-300 transition">Pricing</a>
+      <a href="#waitlist" class="hover:text-gray-300 transition">Waitlist</a>
+    </div>
+    <div>© 2026 OpenSphere Labs</div>
+  </div>
+</footer>
+
+<script>
+// ============================================================
+// NameForge — Client-Side Business Name Generator
+// ============================================================
+
+// --- Dictionaries ---
+const prefixes = [
+  'App','Auto','Base','Bit','Blaze','Bloom','Blue','Bold','Bolt','Boost',
+  'Bright','Build','Buzz','Clear','Click','Cloud','Code','Core','Craft','Dash',
+  'Data','Deep','Dev','Digi','Draft','Drive','Drop','Edge','Ever','Fast',
+  'Fire','Flash','Flex','Flow','Fly','Forge','Fresh','Front','Full','Fuse',
+  'Glow','Go','Grid','Grow','Hack','Hive','Hub','Hyper','Ink','Ion',
+  'Iron','Jet','Jump','Key','Kit','Lab','Launch','Lead','Lean','Leap',
+  'Level','Lift','Light','Link','Live','Logic','Loop','Luma','Lyft','Map',
+  'Mark','Max','Maze','Mega','Meta','Mind','Mint','Mode','Move','Nano',
+  'Neo','Net','Next','Node','Nova','Omni','One','Open','Orbit','Pack',
+  'Path','Peak','Ping','Pixel','Plan','Play','Plus','Pod','Point','Poly'
+];
+
+const suffixes = [
+  'AI','App','Base','Bird','Bit','Block','Board','Bot','Box','Bridge',
+  'Cast','Cloud','Co','Craft','Dash','Data','Deck','Den','Dev','Dock',
+  'Dot','Drive','Drop','Edge','End','Era','Eye','Fi','Fire','Flex',
+  'Flow','Fly','Forge','Form','Fox','Gate','Gen','Go','Grid','Grow',
+  'Guide','Guru','Hawk','Hive','Hub','IQ','Ion','Jet','Joy','Jump',
+  'Key','Kit','Lab','Land','Lane','Leaf','Lens','Lift','Light','Line',
+  'Link','List','Logic','Loop','Ly','Map','Mark','Mate','Max','Mesh',
+  'Mind','Mint','Mix','Mode','Nest','Net','Node','Nova','Ops','Owl',
+  'Pad','Path','Peak','Pilot','Pin','Pixel','Play','Pod','Point','Pool',
+  'Pop','Port','Pro','Pulse','Quest','Radar','Rank','Ray','Rise','Run'
+];
+
+const abstractRoots = [
+  'Aero','Alto','Aqua','Aria','Aura','Axis','Brio','Celo','Cira','Clar',
+  'Creo','Daro','Delo','Duo','Dyna','Echo','Ello','Elvo','Exa','Faro',
+  'Fino','Fluo','Gala','Hexa','Holo','Idra','Iris','Juno','Kalo','Kira',
+  'Laro','Levo','Lira','Luma','Luna','Lyra','Maro','Melo','Mira','Mono',
+  'Nara','Nelo','Nero','Nilo','Nura','Opal','Orba','Paro','Pura','Quil'
+];
+
+const domainTLDs = ['.com','.io','.ai','.co','.app','.dev','.so','.xyz'];
+
+const taglineTemplates = [
+  '{verb} {adj} {noun} — effortlessly',
+  'Where {noun} meets {noun2}',
+  'The {adj} way to {verb}',
+  '{verb} smarter, not harder',
+  'Your {noun}, supercharged',
+  '{adj} {noun} for the modern {audience}',
+  'From idea to {noun} in seconds',
+  'Make every {noun} count',
+  '{noun} that {verb}s itself',
+  'The future of {noun} is here',
+  'Stop guessing. Start {verb}ing.',
+  '{adj}, fast, {adj2}',
+  'Built for {audience} who {verb}',
+  'One {noun} to rule them all',
+  '{verb} with confidence'
+];
+
+const brandVoices = ['Professional','Playful','Bold'];
+
+const colorPalettes = [
+  {name:'Ocean Breeze',colors:['#0EA5E9','#06B6D4','#0F172A','#F0F9FF','#CBD5E1']},
+  {name:'Sunset Glow',colors:['#F97316','#EAB308','#1C1917','#FFFBEB','#A16207']},
+  {name:'Forest Depth',colors:['#22C55E','#15803D','#052E16','#F0FDF4','#86EFAC']},
+  {name:'Royal Purple',colors:['#A855F7','#7C3AED','#1E1B4B','#FAF5FF','#C084FC']},
+  {name:'Cherry Pop',colors:['#EF4444','#F43F5E','#1C1917','#FFF1F2','#FDA4AF']},
+  {name:'Midnight Gold',colors:['#F59E0B','#D97706','#0A0A0A','#FFFBEB','#FDE68A']},
+  {name:'Arctic Blue',colors:['#3B82F6','#1D4ED8','#0F172A','#EFF6FF','#93C5FD']},
+  {name:'Coral Reef',colors:['#FB923C','#F472B6','#1E1B4B','#FFF7ED','#FDBA74']},
+  {name:'Neon Mint',colors:['#34D399','#10B981','#064E3B','#ECFDF5','#6EE7B7']},
+  {name:'Slate Modern',colors:['#64748B','#475569','#0F172A','#F8FAFC','#94A3B8']}
+];
+
+const audiences = ['founders','developers','marketers','creators','designers','entrepreneurs','teams','freelancers','startups','agencies'];
+const verbs = ['build','create','launch','grow','scale','ship','design','craft','forge','spark','ignite','boost','elevate','power','drive','automate','streamline','simplify','transform','optimize'];
+const adjectives = ['smart','fast','simple','powerful','elegant','bold','clean','modern','seamless','brilliant','intuitive','sleek','agile','dynamic','effortless'];
+const nouns_generic = ['workflow','experience','platform','solution','product','tool','engine','system','pipeline','dashboard'];
+
+// --- Keyword extraction ---
+const stopWords = new Set(['a','an','the','is','are','was','were','be','been','being','have','has','had','do','does','did','will','would','shall','should','may','might','must','can','could','of','in','to','for','with','on','at','by','from','as','into','through','during','before','after','above','below','between','out','off','over','under','again','further','then','once','here','there','when','where','why','how','all','both','each','few','more','most','other','some','such','no','nor','not','only','own','same','so','than','too','very','just','about','and','but','or','if','while','that','which','who','whom','this','these','those','am','it','its','i','my','me','we','our','they','their','them','what','up','make','makes','making','tool','app','application','software','service','product','platform','website','business','company','startup','help','helps','people','users','customers','better','best','good','great','new','get','use','using','want','need','like','way','thing','things']);
+
+function extractKeywords(text) {
+  const words = text.toLowerCase().replace(/[^a-z0-9\s]/g,'').split(/\s+/).filter(w => w.length > 2 && !stopWords.has(w));
+  const unique = [...new Set(words)];
+  return unique.length > 0 ? unique : ['spark','nova','flow'];
+}
+
+// --- Utility ---
+function pick(arr) { return arr[Math.floor(Math.random()*arr.length)]; }
+function pickN(arr,n) { const s=[...arr]; for(let i=s.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[s[i],s[j]]=[s[j],s[i]];} return s.slice(0,n); }
+function capitalize(s) { return s.charAt(0).toUpperCase()+s.slice(1); }
+function titleCase(s) { return s.split(/[\s-]+/).map(capitalize).join(''); }
+
+// --- Name Generation Strategies ---
+function genCompound(keywords) {
+  const kw = capitalize(pick(keywords));
+  return kw + pick(suffixes);
+}
+
+function genPrefixSuffix(keywords) {
+  return pick(prefixes) + pick(suffixes);
+}
+
+function genPortmanteau(keywords) {
+  const kw = pick(keywords);
+  const endings = ['ify','ly','ify','io','er','eo','ia','ity','ello','ova','ana','ize','ist','ful','ous'];
+  const base = kw.length > 4 ? kw.slice(0, Math.ceil(kw.length*0.6)) : kw;
+  return capitalize(base) + pick(endings);
+}
+
+function genAbstract() {
+  const root = pick(abstractRoots);
+  const endings = ['','o','a','i','ix','on','is','us','al','ar','io','yx','um'];
+  return root + pick(endings);
+}
+
+function genDomainStyle(keywords) {
+  const kw = pick(keywords).toLowerCase();
+  const prefix = pick(['get','try','use','go','my','the','hey','ask','run','']);
+  const tld = pick(['.ai','.io','.co','.app','.dev','.so']);
+  const name = prefix ? prefix+kw : kw;
+  return name + tld;
+}
+
+function genMetaphor(keywords) {
+  const metaphors = ['Stream','Flow','Spark','Wave','Pulse','Beam','Flame','Storm','Wind','Light','Star','Cloud','Sky','Peak','Rise','Drift','Glow','Arc','Tide','Blaze'];
+  const kw = capitalize(pick(keywords));
+  return Math.random()>0.5 ? kw+pick(metaphors) : pick(metaphors)+kw;
+}
+
+function genActionWord(keywords) {
+  const actions = ['Smart','Genius','IQ','Pro','Plus','Max','Prime','Ultra','Turbo','Hyper','Auto','Quick','Swift','Rapid','Super'];
+  const kw = capitalize(pick(keywords));
+  return kw + pick(actions);
+}
+
+function genKeywordPrefix(keywords) {
+  const kw = capitalize(pick(keywords));
+  return pick(prefixes) + kw;
+}
+
+const strategies = [genCompound,genPrefixSuffix,genPortmanteau,genAbstract,genDomainStyle,genMetaphor,genActionWord,genKeywordPrefix];
+
+// --- Tagline Generation ---
+function generateTagline(name, keywords) {
+  let template = pick(taglineTemplates);
+  const kw = pick(keywords);
+  template = template.replace('{verb}', pick(verbs));
+  template = template.replace('{adj}', pick(adjectives));
+  template = template.replace('{adj2}', pick(adjectives));
+  template = template.replace('{noun}', pick([...nouns_generic, kw]));
+  template = template.replace('{noun2}', pick(nouns_generic));
+  template = template.replace('{audience}', pick(audiences));
+  return template;
+}
+
+// --- Domain Suggestion ---
+function suggestDomain(name) {
+  const clean = name.replace(/[^a-zA-Z0-9]/g,'').toLowerCase();
+  if(name.includes('.')) return name; // already domain-style
+  const tld = pick(domainTLDs);
+  return clean + tld;
+}
+
+// --- Domain Availability (simulated) ---
+function simulateAvailability() {
+  const r = Math.random();
+  if(r < 0.35) return 'available';
+  if(r < 0.7) return 'premium';
+  return 'taken';
+}
+
+// --- Generate a set of names ---
+function generateNameSet(description) {
+  const keywords = extractKeywords(description);
+  const names = [];
+  const usedNames = new Set();
+  const strategyOrder = pickN(strategies, strategies.length);
+
+  // Generate 10 names using different strategies
+  let attempts = 0;
+  while(names.length < 10 && attempts < 50) {
+    const strategy = strategyOrder[names.length % strategyOrder.length];
+    let name = strategy(keywords);
+    
+    // Clean up domain-style names
+    const isDomainStyle = name.includes('.');
+    const nameKey = name.toLowerCase().replace(/[^a-z]/g,'');
+    
+    if(!usedNames.has(nameKey) && name.length > 2 && name.length < 25) {
+      usedNames.add(nameKey);
+      const domain = suggestDomain(name);
+      const availability = simulateAvailability();
+      const voice = pick(brandVoices);
+      const palette = pick(colorPalettes);
+      const tagline = generateTagline(name, keywords);
+      const audience = pickN(audiences, 2).join(' & ');
+      
+      names.push({ name, domain, availability, tagline, voice, palette, audience, isDomainStyle });
+    }
+    attempts++;
+  }
+  return names;
+}
+
+// --- UI ---
+let currentResults = [];
+
+function generateNames() {
+  const input = document.getElementById('heroInput').value.trim();
+  if(!input) {
+    document.getElementById('heroInput').focus();
+    document.getElementById('heroInput').classList.add('ring-2','ring-red-500/50');
+    setTimeout(()=>document.getElementById('heroInput').classList.remove('ring-2','ring-red-500/50'), 2000);
+    return;
+  }
+
+  // Show loading
+  document.getElementById('loadingState').classList.remove('hidden');
+  document.getElementById('resultsContainer').classList.add('hidden');
+
+  // Simulate delay for dramatic effect
+  setTimeout(() => {
+    currentResults = generateNameSet(input);
+    renderResults(input);
+    document.getElementById('loadingState').classList.add('hidden');
+    document.getElementById('resultsContainer').classList.remove('hidden');
+    document.getElementById('resultsContainer').scrollIntoView({behavior:'smooth',block:'start'});
+  }, 800 + Math.random()*600);
+}
+
+function renderResults(query) {
+  const grid = document.getElementById('resultsGrid');
+  grid.innerHTML = '';
+  document.getElementById('resultsSubtitle').textContent = `Based on: "${query}" — Click any name to explore branding`;
+
+  currentResults.forEach((r, i) => {
+    const badgeClass = r.availability === 'available' ? 'badge-available' : r.availability === 'premium' ? 'badge-premium' : 'badge-taken';
+    const badgeLabel = r.availability === 'available' ? '✓ Likely Available' : r.availability === 'premium' ? '★ Premium' : '✗ Likely Taken';
+    
+    const card = document.createElement('div');
+    card.className = `name-card fade-in stagger-${i+1}`;
+    card.onclick = () => toggleExpand(card, i);
+    card.innerHTML = `
+      <div class="flex items-start justify-between gap-4">
+        <div class="flex-1">
+          <h3 class="text-xl font-bold mb-1 ${r.isDomainStyle ? 'font-mono' : ''}">${r.name}</h3>
+          <p class="text-sm text-gray-400 font-mono">${r.domain}</p>
+        </div>
+        <span class="badge ${badgeClass} shrink-0 mt-1">${badgeLabel}</span>
+      </div>
+      <p class="text-sm text-gray-300 mt-3 italic">"${r.tagline}"</p>
+      <div id="expand-${i}" class="hidden mt-5 pt-5 border-t border-gray-700/50">
+        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          <div>
+            <p class="text-xs text-gray-500 uppercase tracking-wide mb-2">Brand Voice</p>
+            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium" style="background:rgba(245,158,11,0.1);color:#fbbf24">
+              ${r.voice === 'Professional' ? '👔' : r.voice === 'Playful' ? '🎮' : '⚡'} ${r.voice}
+            </span>
+          </div>
+          <div>
+            <p class="text-xs text-gray-500 uppercase tracking-wide mb-2">Target Audience</p>
+            <p class="text-sm text-gray-300">${capitalize(r.audience)}</p>
+          </div>
+          <div>
+            <p class="text-xs text-gray-500 uppercase tracking-wide mb-2">Color Palette</p>
+            <p class="text-xs text-gray-400 mb-1">${r.palette.name}</p>
+            <div class="flex gap-1">
+              ${r.palette.colors.map(c => `<div class="color-dot" style="background:${c}" title="${c}"></div>`).join('')}
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+    grid.appendChild(card);
+  });
+}
+
+function toggleExpand(card, index) {
+  const expandEl = document.getElementById(`expand-${index}`);
+  const isExpanded = !expandEl.classList.contains('hidden');
+  
+  // Collapse all
+  document.querySelectorAll('[id^="expand-"]').forEach(el => el.classList.add('hidden'));
+  document.querySelectorAll('.name-card').forEach(c => c.classList.remove('expanded'));
+  
+  if(!isExpanded) {
+    expandEl.classList.remove('hidden');
+    card.classList.add('expanded');
+  }
+}
+
+// --- Waitlist ---
+function joinWaitlist() {
+  const email = document.getElementById('waitlistEmail').value.trim();
+  const msg = document.getElementById('waitlistMsg');
+  
+  if(!email || !email.includes('@') || !email.includes('.')) {
+    msg.textContent = 'Please enter a valid email address';
+    msg.className = 'text-sm mt-4 text-red-400';
+    msg.classList.remove('hidden');
+    return;
+  }
+
+  let waitlist = JSON.parse(localStorage.getItem('nameforge_waitlist') || '[]');
+  if(waitlist.includes(email)) {
+    msg.textContent = "You're already on the list! We'll be in touch soon.";
+    msg.className = 'text-sm mt-4 text-amber-400';
+    msg.classList.remove('hidden');
+    return;
+  }
+
+  waitlist.push(email);
+  localStorage.setItem('nameforge_waitlist', JSON.stringify(waitlist));
+  
+  msg.textContent = "🎉 You're in! We'll email you when Pro launches.";
+  msg.className = 'text-sm mt-4 text-green-400';
+  msg.classList.remove('hidden');
+  document.getElementById('waitlistEmail').value = '';
+  updateWaitlistCount();
+}
+
+function updateWaitlistCount() {
+  const waitlist = JSON.parse(localStorage.getItem('nameforge_waitlist') || '[]');
+  const countEl = document.getElementById('waitlistCount');
+  if(waitlist.length > 0) {
+    const display = waitlist.length + Math.floor(Math.random()*40) + 120; // social proof padding
+    countEl.textContent = `🔥 ${display} founders on the waitlist`;
+  }
+}
+
+// Init
+updateWaitlistCount();
+</script>
+
+</body>
+</html>
