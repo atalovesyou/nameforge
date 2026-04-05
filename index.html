@@ -24,11 +24,12 @@
     </script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NameForge — AI Business Name Generator</title>
-<meta name="description" content="Generate creative business names with AI. Get domain suggestions, taglines, and branding — all in seconds.">
+<title>NameForge v2.0 — AI Business Name Generator with Branding</title>
+<meta name="description" content="Generate creative business names with AI. Get domain suggestions, taglines, brand kits, and color palettes — all in seconds. Export professional PDF brand guides.">
 <meta property="og:title" content="NameForge — Name your next big thing">
-<meta property="og:description" content="AI-powered business name generator with domain check, taglines, and brand kits.">
+<meta property="og:description" content="AI-powered business name generator with domain check, taglines, color palettes, and PDF brand kit export.">
 <meta property="og:type" content="website">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.2/jspdf.umd.min.js"></script>
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
 tailwind.config = {
@@ -77,6 +78,30 @@ input[type="text"]:focus,input[type="email"]:focus{outline:none;border-color:rgb
 ::selection{background:rgba(245,158,11,0.3);color:#fff}
 .check-icon{color:#4ade80}
 .x-icon{color:#f87171}
+.filter-chip{padding:6px 16px;border-radius:20px;font-size:13px;font-weight:500;cursor:pointer;transition:all .2s;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);color:#94a3b8}
+.filter-chip:hover{border-color:rgba(245,158,11,0.3);color:#fbbf24}
+.filter-chip.active{background:rgba(245,158,11,0.15);border-color:rgba(245,158,11,0.4);color:#fbbf24}
+.score-badge{display:inline-flex;align-items:center;gap:3px;padding:2px 8px;border-radius:12px;font-size:11px;font-weight:600}
+.score-high{background:rgba(34,197,94,0.12);color:#4ade80}
+.score-mid{background:rgba(250,204,21,0.12);color:#facc15}
+.score-low{background:rgba(239,68,68,0.12);color:#f87171}
+.heart-btn{background:none;border:none;cursor:pointer;font-size:18px;transition:transform .2s;padding:4px}
+.heart-btn:hover{transform:scale(1.2)}
+.heart-btn.favorited{animation:heartPop .3s ease}
+@keyframes heartPop{0%{transform:scale(1)}50%{transform:scale(1.4)}100%{transform:scale(1)}}
+.copy-btn{background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);color:#94a3b8;cursor:pointer;padding:4px 10px;border-radius:8px;font-size:12px;transition:all .2s}
+.copy-btn:hover{background:rgba(245,158,11,0.15);border-color:rgba(245,158,11,0.3);color:#fbbf24}
+.compare-btn{background:rgba(99,102,241,0.1);border:1px solid rgba(99,102,241,0.2);color:#818CF8;cursor:pointer;padding:4px 10px;border-radius:8px;font-size:12px;transition:all .2s}
+.compare-btn:hover{background:rgba(99,102,241,0.2);border-color:rgba(99,102,241,0.4)}
+.compare-btn.selected{background:rgba(99,102,241,0.3);border-color:rgba(99,102,241,0.5);color:#A5B4FC}
+.compare-panel{background:rgba(99,102,241,0.05);border:1px solid rgba(99,102,241,0.2);border-radius:16px;padding:24px;margin-bottom:24px}
+.history-dropdown{background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);border-radius:12px;max-height:200px;overflow-y:auto}
+.history-item{padding:10px 16px;cursor:pointer;border-bottom:1px solid rgba(255,255,255,0.05);transition:background .2s}
+.history-item:hover{background:rgba(245,158,11,0.1)}
+.history-item:last-child{border-bottom:none}
+.pdf-btn{background:rgba(239,68,68,0.1);border:1px solid rgba(239,68,68,0.2);color:#f87171;cursor:pointer;padding:4px 10px;border-radius:8px;font-size:12px;transition:all .2s}
+.pdf-btn:hover{background:rgba(239,68,68,0.2);border-color:rgba(239,68,68,0.4)}
+.category-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:0.05em;padding:3px 10px;border-radius:8px}
 ::-webkit-scrollbar{width:8px}::-webkit-scrollbar-track{background:#0a0a0a}::-webkit-scrollbar-thumb{background:#333;border-radius:4px}
 </style>
   <link rel="canonical" href="https://atalovesyou.github.io/nameforge/">
@@ -98,9 +123,11 @@ input[type="text"]:focus,input[type="email"]:focus{outline:none;border-color:rgb
       <span class="text-xl font-bold bg-gradient-to-r from-amber-400 to-orange-500 bg-clip-text text-transparent">NameForge</span>
     </div>
     <div class="hidden md:flex items-center gap-8 text-sm text-gray-400">
-      <a href="#demo" class="hover:text-amber-400 transition">Demo</a>
+      <a href="#demo" class="hover:text-amber-400 transition">Generate</a>
+      <a href="#history" class="hover:text-amber-400 transition">History</a>
       <a href="#features" class="hover:text-amber-400 transition">Features</a>
       <a href="#pricing" class="hover:text-amber-400 transition">Pricing</a>
+      <span class="text-xs px-2 py-0.5 rounded-full font-bold" style="background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.3)">v2.0</span>
       <a href="#waitlist" class="btn-primary px-5 py-2 text-sm">Get Early Access</a>
     </div>
   </nav>
@@ -128,6 +155,13 @@ input[type="text"]:focus,input[type="email"]:focus{outline:none;border-color:rgb
         </button>
       </div>
       <p class="text-xs text-gray-500 mt-3">Free — no signup required. Try it now!</p>
+      <!-- Generation History -->
+      <div id="historySection" class="hidden mt-4 text-left">
+        <button onclick="toggleHistory()" class="text-xs text-gray-500 hover:text-amber-400 transition flex items-center gap-1">
+          <span>📜</span> <span id="historyToggleLabel">Show History</span> <span id="historyArrow">▼</span>
+        </button>
+        <div id="historyList" class="hidden mt-2 history-dropdown"></div>
+      </div>
     </div>
   </div>
 
@@ -140,9 +174,48 @@ input[type="text"]:focus,input[type="email"]:focus{outline:none;border-color:rgb
 <!-- Interactive Demo / Results -->
 <section id="demo" class="px-4 pb-24">
   <div id="resultsContainer" class="max-w-5xl mx-auto hidden">
-    <div class="text-center mb-10">
+    <div class="text-center mb-6">
       <h2 class="text-3xl font-bold mb-2">Your names are ready 🎉</h2>
       <p id="resultsSubtitle" class="text-gray-400">Click any name to see branding details</p>
+      <p id="genCounter" class="text-xs text-gray-600 mt-1"></p>
+      <!-- History dropdown -->
+      <div class="history-dropdown inline-block mt-2">
+        <button onclick="toggleHistoryMenu()" class="text-xs px-3 py-1.5 rounded-lg font-medium transition" style="background:rgba(255,255,255,0.04);color:#94a3b8;border:1px solid rgba(255,255,255,0.08)" onmouseover="this.style.borderColor='rgba(245,158,11,0.3)';this.style.color='#fbbf24'" onmouseout="this.style.borderColor='rgba(255,255,255,0.08)';this.style.color='#94a3b8'">🕘 History</button>
+        <div id="historyMenu" class="history-menu">
+          <div id="historyList"><p class="text-xs text-gray-500 p-3">No history yet</p></div>
+        </div>
+      </div>
+    </div>
+    <!-- Style filter chips -->
+    <div id="filterChips" class="flex flex-wrap justify-center gap-2 mb-6">
+      <button class="filter-chip active" data-filter="all" onclick="filterByStyle('all')">All</button>
+      <button class="filter-chip" data-filter="tech" onclick="filterByStyle('tech')">⚡ Tech</button>
+      <button class="filter-chip" data-filter="creative" onclick="filterByStyle('creative')">🎨 Creative</button>
+      <button class="filter-chip" data-filter="professional" onclick="filterByStyle('professional')">👔 Professional</button>
+      <button class="filter-chip" data-filter="playful" onclick="filterByStyle('playful')">🎮 Playful</button>
+    </div>
+    <!-- Favorites bar -->
+    <div id="favoritesBar" class="hidden mb-6 p-4 rounded-xl" style="background:rgba(245,158,11,0.08);border:1px solid rgba(245,158,11,0.2)">
+      <div class="flex items-center justify-between flex-wrap gap-3">
+        <div class="flex items-center gap-2">
+          <span class="text-amber-400">❤️</span>
+          <span id="favCount" class="text-sm text-amber-300 font-medium">0 favorites</span>
+        </div>
+        <div class="flex gap-2">
+          <button onclick="exportFavorites()" class="text-xs px-3 py-1.5 rounded-lg font-medium transition" style="background:rgba(245,158,11,0.15);color:#fbbf24;border:1px solid rgba(245,158,11,0.3)" onmouseover="this.style.background='rgba(245,158,11,0.25)'" onmouseout="this.style.background='rgba(245,158,11,0.15)'">📋 Export Text</button>
+          <button onclick="exportAllFavoritesPDF()" class="text-xs px-3 py-1.5 rounded-lg font-medium transition" style="background:rgba(239,68,68,0.15);color:#f87171;border:1px solid rgba(239,68,68,0.3)" onmouseover="this.style.background='rgba(239,68,68,0.25)'" onmouseout="this.style.background='rgba(239,68,68,0.15)'">📄 Export PDF</button>
+          <button onclick="exportAllFavoritesPDF()" class="text-xs px-3 py-1.5 rounded-lg font-medium transition" style="background:rgba(239,68,68,0.15);color:#FCA5A5;border:1px solid rgba(239,68,68,0.3)" onmouseover="this.style.background='rgba(239,68,68,0.25)'" onmouseout="this.style.background='rgba(239,68,68,0.15)'">📄 Export All PDF</button>
+          <button onclick="clearFavorites()" class="text-xs px-3 py-1.5 rounded-lg font-medium text-gray-500 hover:text-red-400 transition" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08)">Clear All</button>
+        </div>
+      </div>
+    </div>
+    <!-- Compare Panel -->
+    <div id="comparePanel" class="compare-panel hidden">
+      <div class="flex items-center justify-between mb-4">
+        <h3 class="text-lg font-bold text-indigo-300">⚖️ Compare Names</h3>
+        <button onclick="clearCompare()" class="text-xs text-gray-500 hover:text-red-400 transition">Clear comparison</button>
+      </div>
+      <div id="compareGrid" class="grid grid-cols-2 md:grid-cols-4 gap-4"></div>
     </div>
     <div id="resultsGrid" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
     <div class="text-center mt-8">
@@ -182,7 +255,7 @@ input[type="text"]:focus,input[type="email"]:focus{outline:none;border-color:rgb
         <div class="w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center text-3xl" style="background:rgba(245,158,11,0.1)">⚡</div>
         <div class="text-sm text-amber-400 font-semibold mb-2">Step 2</div>
         <h3 class="text-xl font-bold mb-3">Generate</h3>
-        <p class="text-gray-400">Our AI creates 10 unique names with domains, taglines, and brand suggestions in seconds.</p>
+        <p class="text-gray-400">Our AI creates 12 unique names with domains, taglines, and brand suggestions in seconds.</p>
       </div>
       <div class="text-center">
         <div class="w-16 h-16 mx-auto mb-6 rounded-2xl flex items-center justify-center text-3xl" style="background:rgba(245,158,11,0.1)">🚀</div>
@@ -190,6 +263,46 @@ input[type="text"]:focus,input[type="email"]:focus{outline:none;border-color:rgb
         <h3 class="text-xl font-bold mb-3">Launch</h3>
         <p class="text-gray-400">Pick your favorite, export the brand kit, register the domain, and start building.</p>
       </div>
+    </div>
+  </div>
+</section>
+
+<!-- Generation History Dashboard -->
+<section id="history" class="px-4 py-24" style="background:rgba(255,255,255,0.01)">
+  <div class="max-w-5xl mx-auto">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl md:text-4xl font-bold mb-4">Your Naming Sessions</h2>
+      <p class="text-gray-400 text-lg">Track your creative exploration</p>
+    </div>
+    <!-- Stats Cards -->
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+      <div class="card p-5 text-center">
+        <div class="text-3xl font-black text-amber-400" id="statTotal">0</div>
+        <div class="text-xs text-gray-500 mt-1">Total Generations</div>
+      </div>
+      <div class="card p-5 text-center">
+        <div class="text-3xl font-black text-green-400" id="statNames">0</div>
+        <div class="text-xs text-gray-500 mt-1">Names Generated</div>
+      </div>
+      <div class="card p-5 text-center">
+        <div class="text-3xl font-black text-pink-400" id="statFavs">0</div>
+        <div class="text-xs text-gray-500 mt-1">Favorites</div>
+      </div>
+      <div class="card p-5 text-center">
+        <div class="text-3xl font-black text-indigo-400" id="statExports">0</div>
+        <div class="text-xs text-gray-500 mt-1">Brand Kits Exported</div>
+      </div>
+    </div>
+    <!-- History Actions -->
+    <div class="flex items-center justify-between flex-wrap gap-3 mb-6">
+      <div class="flex items-center gap-2">
+        <button onclick="exportSessionJSON()" class="text-xs px-3 py-1.5 rounded-lg font-medium transition" style="background:rgba(245,158,11,0.1);color:#fbbf24;border:1px solid rgba(245,158,11,0.2)">📋 Export Session</button>
+        <button onclick="clearHistory()" class="text-xs px-3 py-1.5 rounded-lg font-medium text-gray-500 hover:text-red-400 transition" style="background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.08)">🗑 Clear History</button>
+      </div>
+    </div>
+    <!-- History List -->
+    <div id="historyDashboard" class="space-y-3">
+      <p class="text-gray-500 text-sm text-center py-8">No generations yet. Try the name generator above!</p>
     </div>
   </div>
 </section>
@@ -205,7 +318,7 @@ input[type="text"]:focus,input[type="email"]:focus{outline:none;border-color:rgb
       <div class="card p-8">
         <div class="text-3xl mb-4">🧠</div>
         <h3 class="text-lg font-bold mb-2">AI Name Generation</h3>
-        <p class="text-gray-400 text-sm leading-relaxed">6 naming strategies — compound words, portmanteaus, abstract brandable, domain-style, metaphors, and action words.</p>
+        <p class="text-gray-400 text-sm leading-relaxed">12 naming strategies — compounds, portmanteaus, acronyms, rhyming pairs, alliterative, abstract brandable, domain-style, metaphors, mashups, and more.</p>
       </div>
       <div class="card p-8">
         <div class="text-3xl mb-4">🌐</div>
@@ -251,7 +364,7 @@ input[type="text"]:focus,input[type="email"]:focus{outline:none;border-color:rgb
         <p class="text-gray-500 text-sm mb-6">Forever free</p>
         <ul class="space-y-3 text-sm text-gray-300 mb-8">
           <li class="flex items-center gap-2"><span class="check-icon">✓</span> 3 generations/day</li>
-          <li class="flex items-center gap-2"><span class="check-icon">✓</span> 10 names per generation</li>
+          <li class="flex items-center gap-2"><span class="check-icon">✓</span> 12 names per generation</li>
           <li class="flex items-center gap-2"><span class="check-icon">✓</span> Basic name styles</li>
           <li class="flex items-center gap-2"><span class="check-icon">✓</span> Domain suggestions</li>
           <li class="flex items-center gap-2"><span class="x-icon">✗</span> <span class="text-gray-500">Taglines</span></li>
@@ -333,11 +446,12 @@ input[type="text"]:focus,input[type="email"]:focus{outline:none;border-color:rgb
     <div class="text-5xl mb-6">🔥</div>
     <h2 class="text-3xl md:text-4xl font-bold mb-4">Get early access</h2>
     <p class="text-gray-400 text-lg mb-8">Join the waitlist for Pro features. Free tier is available now — try the demo above!</p>
-    <div class="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto">
-      <input id="waitlistEmail" type="email" placeholder="you@startup.com" class="flex-1 px-6 py-4 rounded-xl text-base">
-      <button onclick="joinWaitlist()" class="btn-primary px-8 py-4 text-base whitespace-nowrap">Get Early Access</button>
-    </div>
-    <p id="waitlistMsg" class="text-sm mt-4 hidden"></p>
+    <form class="flex flex-col sm:flex-row gap-3 max-w-lg mx-auto" action="https://formsubmit.co/atal@atalovesyou.com" method="POST">
+      <input type="hidden" name="_subject" value="NameForge Waitlist">
+      <input type="hidden" name="_captcha" value="false">
+      <input id="waitlistEmail" name="email" type="email" placeholder="you@startup.com" required class="flex-1 px-6 py-4 rounded-xl text-base">
+      <button type="submit" class="btn-primary px-8 py-4 text-base whitespace-nowrap">Get Early Access</button>
+    </form>
     <p id="waitlistCount" class="text-xs text-gray-500 mt-3"></p>
   </div>
 </section>
@@ -363,47 +477,184 @@ input[type="text"]:focus,input[type="email"]:focus{outline:none;border-color:rgb
 
 <script>
 // ============================================================
-// NameForge — Client-Side Business Name Generator
+// NameForge v2 — Production-Quality Client-Side Name Generator
 // ============================================================
 
-// --- Dictionaries ---
-const prefixes = [
-  'App','Auto','Base','Bit','Blaze','Bloom','Blue','Bold','Bolt','Boost',
-  'Bright','Build','Buzz','Clear','Click','Cloud','Code','Core','Craft','Dash',
-  'Data','Deep','Dev','Digi','Draft','Drive','Drop','Edge','Ever','Fast',
-  'Fire','Flash','Flex','Flow','Fly','Forge','Fresh','Front','Full','Fuse',
-  'Glow','Go','Grid','Grow','Hack','Hive','Hub','Hyper','Ink','Ion',
-  'Iron','Jet','Jump','Key','Kit','Lab','Launch','Lead','Lean','Leap',
-  'Level','Lift','Light','Link','Live','Logic','Loop','Luma','Lyft','Map',
-  'Mark','Max','Maze','Mega','Meta','Mind','Mint','Mode','Move','Nano',
-  'Neo','Net','Next','Node','Nova','Omni','One','Open','Orbit','Pack',
-  'Path','Peak','Ping','Pixel','Plan','Play','Plus','Pod','Point','Poly'
+// ==================== DICTIONARIES ====================
+
+// Prefixes organized by vibe (200+)
+const PREFIXES = {
+  tech: ['App','Auto','Bit','Byte','Click','Cloud','Code','Cyber','Data','Dev','Digi','Grid','Hack','Hyper','Logic','Mega','Meta','Nano','Neo','Net','Node','Pixel','Poly','Quad','Robo','Sync','Tech','Tera','Virt','Web','Wire','Zero','Algo','Api','Arch','Crypt','Flux','Hash','Hex','Kern','Macro','Micro','Parse','Proto','Quant','React','Stack','Sys','Vec','Volt'],
+  nature: ['Bloom','Breeze','Cedar','Coral','Dawn','Dew','Elm','Ember','Fern','Flora','Glen','Grove','Harbor','Ivy','Jade','Lake','Leaf','Luna','Maple','Marsh','Meadow','Moss','Oak','Petal','Pine','Rain','Reed','River','Root','Rose','Sage','Shore','Sky','Stone','Tide','Vale','Willow','Wind','Wren','Birch'],
+  power: ['Apex','Blaze','Bold','Bolt','Brave','Charge','Clash','Crest','Crown','Crush','Dynamo','Edge','Elite','Falcon','Fierce','Flame','Flash','Force','Fury','Hawk','Impact','Iron','Jet','Lance','Mag','Nitro','Onyx','Primal','Rogue','Rush','Shield','Spike','Steel','Storm','Strike','Surge','Swift','Titan','Thunder','Venom'],
+  clean: ['Arc','Aura','Base','Bright','Calm','Cast','Center','Clear','Core','Craft','Ease','Ever','Fine','First','Flow','Form','Frame','Fresh','Front','Full','Glow','Haven','Key','Kind','Lean','Level','Light','Link','Live','Loft','Main','Neat','Next','Open','Path','Peak','Prime','Pure','Set','Simple','Smooth','Span','Sure','True','Unity','Up','Vast','Well','Zen'],
+  creative: ['Brio','Buzz','Canvas','Charm','Dash','Dream','Echo','Fancy','Fizz','Flair','Fun','Glee','Glint','Hue','Jazz','Jest','Jolly','Joy','Karma','Kismet','Mojo','Muse','Nifty','Oddly','Play','Pop','Quirk','Radiant','Rhyme','Riff','Sass','Snap','Spark','Spry','Swirl','Tango','Trick','Vibe','Whim','Wit','Zany','Zing','Zest']
+};
+
+// Suffixes (200+)
+const SUFFIXES = [
+  'AI','App','Base','Bird','Bit','Block','Board','Bot','Box','Bridge','Cast','Cloud','Co','Craft','Dash','Data','Deck','Den','Dev','Dock','Dot','Drive','Drop','Edge','End','Era','Eye','Fi','Fire','Flex','Flow','Fly','Forge','Form','Fox','Gate','Gen','Go','Grid','Grow','Guide','Guru','Hawk','Hive','Hub','IQ','Ion','Jet','Joy','Jump','Key','Kit','Lab','Land','Lane','Leaf','Lens','Lift','Light','Line','Link','List','Logic','Loop','Ly','Map','Mark','Mate','Max','Mesh','Mind','Mint','Mix','Mode','Nest','Net','Node','Nova','Ops','Owl','Pad','Path','Peak','Pilot','Pin','Pixel','Play','Pod','Point','Pool','Pop','Port','Pro','Pulse','Quest','Radar','Rank','Ray','Rise','Run','Sail','Scale','Scan','Scope','Scout','Send','Set','Shift','Ship','Signal','Snap','Soft','Spark','Sphere','Spot','Stack','Star','Step','Stream','Stripe','Surf','Swap','Swift','Switch','Sync','Tap','Task','Tier','Trace','Track','Trail','Trek','Tribe','Turn','Vault','View','Vista','Ware','Wave','Way','Wire','Wise','Works','World','Yard','Zone',
+  'able','eon','ery','ful','fy','ica','ify','ink','ist','ium','ize','ling','ment','ory','ous','ry','smith','ster','tron','verse','ward','zen'
 ];
 
-const suffixes = [
-  'AI','App','Base','Bird','Bit','Block','Board','Bot','Box','Bridge',
-  'Cast','Cloud','Co','Craft','Dash','Data','Deck','Den','Dev','Dock',
-  'Dot','Drive','Drop','Edge','End','Era','Eye','Fi','Fire','Flex',
-  'Flow','Fly','Forge','Form','Fox','Gate','Gen','Go','Grid','Grow',
-  'Guide','Guru','Hawk','Hive','Hub','IQ','Ion','Jet','Joy','Jump',
-  'Key','Kit','Lab','Land','Lane','Leaf','Lens','Lift','Light','Line',
-  'Link','List','Logic','Loop','Ly','Map','Mark','Mate','Max','Mesh',
-  'Mind','Mint','Mix','Mode','Nest','Net','Node','Nova','Ops','Owl',
-  'Pad','Path','Peak','Pilot','Pin','Pixel','Play','Pod','Point','Pool',
-  'Pop','Port','Pro','Pulse','Quest','Radar','Rank','Ray','Rise','Run'
+// Abstract brandable roots (100+)
+const ABSTRACT_ROOTS = [
+  'Aero','Alto','Aqua','Aria','Aura','Axis','Brio','Calo','Cela','Celo','Cira','Clar','Creo','Daro','Delo','Duo','Dyna','Echo','Ello','Elvo','Exa','Faro','Felo','Fino','Fluo','Gala','Gyro','Hexa','Holo','Idra','Ilo','Iris','Juno','Kalo','Kira','Kyro','Laro','Levo','Lira','Luma','Luna','Lyra','Maro','Melo','Mira','Mono','Myra','Nara','Nelo','Nero','Nilo','Nura','Olio','Opal','Orba','Orca','Paro','Pila','Pura','Pyro','Quil','Relo','Reva','Rivo','Salo','Sera','Silo','Sola','Sona','Soro','Talo','Tera','Tero','Tilo','Trio','Typo','Ultra','Undo','Valo','Vara','Vela','Vero','Vira','Volo','Xano','Xero','Yara','Yelo','Zara','Zelo','Zeno','Zeta','Zilo','Zira','Zola','Zora','Zumo','Avio','Bela','Cova','Deva','Elan','Fora'
 ];
 
-const abstractRoots = [
-  'Aero','Alto','Aqua','Aria','Aura','Axis','Brio','Celo','Cira','Clar',
-  'Creo','Daro','Delo','Duo','Dyna','Echo','Ello','Elvo','Exa','Faro',
-  'Fino','Fluo','Gala','Hexa','Holo','Idra','Iris','Juno','Kalo','Kira',
-  'Laro','Levo','Lira','Luma','Luna','Lyra','Maro','Melo','Mira','Mono',
-  'Nara','Nelo','Nero','Nilo','Nura','Opal','Orba','Paro','Pura','Quil'
-];
+// Industry word banks (50+ per industry)
+const INDUSTRY_WORDS = {
+  saas: ['deploy','integrate','automate','pipeline','dashboard','analytics','workflow','metric','insight','report','monitor','optimize','segment','funnel','onboard','retain','churn','subscription','billing','tenant','api','webhook','sync','migrate','scale','enterprise','admin','config','module','feature','sprint','agile','kanban','backlog','release','version','sandbox','staging','production','uptime','latency','throughput','endpoint','schema','payload','token','oauth','sso','rbac','audit'],
+  ecommerce: ['shop','cart','checkout','order','catalog','inventory','merchant','buyer','seller','listing','storefront','shipping','fulfillment','warehouse','return','refund','review','wishlist','coupon','discount','promo','bundle','sku','variant','dropship','wholesale','retail','marketplace','vendor','payment','gateway','receipt','invoice','loyalty','subscription','browse','search','filter','compare','recommend','upsell','cross-sell','conversion','basket','delivery','tracking','unbox','brand','collection','seasonal'],
+  health: ['wellness','therapy','patient','clinic','care','vital','pulse','health','medical','doctor','nurse','telehealth','diagnosis','symptom','remedy','prescription','pharmacy','lab','scan','monitor','fitness','nutrition','diet','meal','calorie','vitamin','supplement','sleep','mindful','meditate','breathe','recovery','rehab','physio','mental','stress','anxiety','habit','tracker','journal','coach','holistic','immune','cardio','dental','vision','chronic','acute','preventive','screening'],
+  finance: ['invest','trade','portfolio','asset','equity','bond','fund','wealth','capital','yield','dividend','market','stock','crypto','defi','wallet','ledger','audit','tax','compliance','budget','forecast','revenue','expense','profit','margin','roi','valuation','fintech','banking','loan','credit','mortgage','insurance','payment','transfer','clearing','settlement','risk','hedge','arbitrage','derivative','option','futures','index','benchmark','fiduciary','advisory','pension','savings'],
+  education: ['learn','teach','course','lesson','tutor','student','mentor','academy','campus','curriculum','syllabus','module','quiz','exam','grade','degree','diploma','certificate','skill','training','workshop','seminar','lecture','study','research','thesis','library','book','note','flashcard','practice','exercise','homework','assignment','project','presentation','classroom','virtual','cohort','peer','feedback','rubric','assessment','credential','badge','pathway','bootcamp','scholar','literacy','stem'],
+  creative: ['design','art','studio','canvas','palette','sketch','draw','paint','illustrate','render','animate','motion','film','video','photo','camera','lens','edit','publish','write','blog','story','novel','poem','script','lyric','compose','produce','mix','master','record','stream','broadcast','channel','gallery','exhibit','portfolio','brand','logo','icon','font','type','layout','wireframe','mockup','prototype','print','craft','handmade','bespoke'],
+  food: ['recipe','cook','chef','kitchen','bistro','cafe','bakery','grill','roast','brew','blend','spice','herb','organic','fresh','farm','harvest','garden','plate','dish','menu','taste','flavor','savor','bite','snack','meal','feast','dine','serve','pantry','cellar','market','local','seasonal','artisan','ferment','pickle','smoke','sous-vide','gastro','fusion','comfort','vegan','gluten','dairy','grain','protein','superfood','forage'],
+  fitness: ['workout','train','gym','lift','run','sprint','cycle','swim','yoga','pilates','hiit','cardio','strength','endurance','flex','stretch','warmup','cooldown','rep','set','circuit','interval','pace','stride','form','posture','core','muscle','tone','lean','bulk','cut','recovery','rest','hydrate','fuel','protein','macro','tracking','goal','challenge','streak','leaderboard','coach','personal','group','class','bootcamp','crossfit','functional'],
+  legal: ['contract','clause','brief','counsel','attorney','lawyer','litigate','mediate','arbitrate','depose','statute','ordinance','precedent','verdict','appeal','motion','filing','docket','compliance','regulate','patent','trademark','copyright','intellectual','property','estate','probate','trust','custody','tort','negligence','settlement','retainer','paralegal','notary','affidavit','subpoena','discovery','witness','testimony','jurisdiction','plaintiff','defendant','prosecution','defense'],
+  realestate: ['property','listing','mortgage','appraisal','escrow','closing','deed','title','lease','tenant','landlord','broker','agent','commission','mls','zoning','inspect','renovate','flip','invest','equity','refinance','foreclose','condo','townhouse','duplex','commercial','residential','vacant','staging','openhouse','walkthrough','offer','counteroffer','contingency','earnest','hoa','amenity','sqft','acreage','parcel','subdivision','assessment','survey','lien'],
+  travel: ['booking','itinerary','flight','hotel','resort','hostel','cruise','tour','excursion','passport','visa','transit','layover','destination','adventure','explore','backpack','nomad','souvenir','luggage','boarding','terminal','departure','arrival','transfer','charter','guidebook','locale','wanderlust','getaway','retreat','safari','trek','voyage','pilgrimage','expedition','concierge','villa','bungalow','airfare','roundtrip','carpool','rideshare'],
+  marketing: ['campaign','funnel','segment','audience','impression','click','conversion','retarget','engage','outreach','brand','content','copy','headline','cta','landing','seo','sem','social','influencer','affiliate','viral','organic','paid','analytics','metric','kpi','roi','ab-test','persona','lead','nurture','drip','newsletter','webinar','podcast','pr','press','launch','pitch','storytelling','position','awareness','retention','loyalty','churn','upsell'],
+  hr: ['recruit','hire','onboard','retain','payroll','benefits','compensation','equity','pto','leave','performance','review','appraisal','feedback','culture','engagement','diversity','inclusion','equity','compliance','policy','handbook','grievance','mediate','terminate','offboard','succession','talent','pipeline','candidate','applicant','interview','screening','background','reference','offer','negotiate','relocation','training','development','mentorship','coaching','wellness','survey','headcount','workforce','org-chart','remote','hybrid']
+};
 
-const domainTLDs = ['.com','.io','.ai','.co','.app','.dev','.so','.xyz'];
+// ==================== INDUSTRY DETECTION ====================
+const INDUSTRY_PATTERNS = {
+  saas: /\b(saas|software|platform|dashboard|analytics|crm|erp|b2b|enterprise|api|integration|automat|workflow|pipeline|deploy|cloud.?based|subscription|tenant|devops)\b/i,
+  ecommerce: /\b(ecommerce|e-commerce|shop|store|sell|buy|retail|merchant|marketplace|cart|checkout|product|inventory|shipping|dropship|wholesale|catalog)\b/i,
+  health: /\b(health|medical|wellness|patient|clinic|therapy|fitness|nutrition|diet|mental|telehealth|pharma|doctor|nurse|care|diagnosis|symptom|vital)\b/i,
+  finance: /\b(finance|fintech|invest|trading|banking|payment|crypto|defi|wealth|portfolio|budget|tax|insurance|loan|credit|accounting|audit|capital)\b/i,
+  education: /\b(education|learn|teach|course|tutor|student|academy|training|workshop|study|school|university|bootcamp|skill|certification|lesson|mentor)\b/i,
+  creative: /\b(design|creative|art|studio|video|photo|film|music|write|publish|animate|brand|logo|content|media|podcast|stream|illustrat)\b/i,
+  food: /\b(food|restaurant|recipe|cook|chef|meal|delivery|kitchen|bakery|cafe|coffee|tea|wine|beer|brew|organic|farm|grocery|catering|menu)\b/i,
+  fitness: /\b(fitness|workout|gym|exercise|training|yoga|running|cycling|swimming|crossfit|hiit|strength|cardio|athletic|sport|coach|personal.?train)\b/i,
+  legal: /\b(legal|law|lawyer|attorney|contract|compliance|patent|trademark|litigation|court|counsel|paralegal|mediat|arbitrat|estate.?plan|intellectual.?property)\b/i,
+  realestate: /\b(real.?estate|property|mortgage|listing|broker|rental|tenant|landlord|housing|realt|apprais|escrow|home.?buy|home.?sell|commercial.?property|residential)\b/i,
+  travel: /\b(travel|booking|flight|hotel|tour|cruise|destination|trip|vacation|resort|hostel|backpack|itinerary|passport|adventure|nomad|airline)\b/i,
+  marketing: /\b(marketing|campaign|seo|content|brand|social.?media|advertis|digital.?market|email.?market|influencer|funnel|analytics|conversion|copywriting|outreach|lead.?gen)\b/i,
+  hr: /\b(hr|human.?resource|recruit|hiring|talent|payroll|employee|onboard|workforce|benefits|compensation|people.?ops|hris|applicant|staffing|retention)\b/i
+};
 
-const taglineTemplates = [
+function detectIndustry(description) {
+  const scores = {};
+  for (const [ind, pattern] of Object.entries(INDUSTRY_PATTERNS)) {
+    const matches = description.match(new RegExp(pattern, 'gi'));
+    scores[ind] = matches ? matches.length : 0;
+  }
+  const sorted = Object.entries(scores).sort((a,b) => b[1] - a[1]);
+  if (sorted[0][1] > 0) return sorted[0][0];
+  return 'saas'; // default
+}
+
+// Industry-matched color palettes
+const INDUSTRY_PALETTES = {
+  saas: [
+    {name:'Indigo SaaS',colors:['#6366F1','#4F46E5','#0F172A','#EEF2FF','#A5B4FC']},
+    {name:'Deep Blue',colors:['#3B82F6','#2563EB','#0F172A','#EFF6FF','#93C5FD']},
+    {name:'Slate Pro',colors:['#64748B','#475569','#0F172A','#F8FAFC','#94A3B8']}
+  ],
+  ecommerce: [
+    {name:'Commerce Orange',colors:['#F97316','#EA580C','#1C1917','#FFF7ED','#FDBA74']},
+    {name:'Trust Blue',colors:['#0EA5E9','#0284C7','#0C4A6E','#F0F9FF','#7DD3FC']},
+    {name:'Fresh Green',colors:['#22C55E','#16A34A','#052E16','#F0FDF4','#86EFAC']}
+  ],
+  health: [
+    {name:'Healing Teal',colors:['#14B8A6','#0D9488','#042F2E','#F0FDFA','#5EEAD4']},
+    {name:'Calm Blue',colors:['#06B6D4','#0891B2','#083344','#ECFEFF','#67E8F9']},
+    {name:'Vital Green',colors:['#10B981','#059669','#022C22','#ECFDF5','#6EE7B7']}
+  ],
+  finance: [
+    {name:'Wealth Green',colors:['#22C55E','#15803D','#052E16','#F0FDF4','#86EFAC']},
+    {name:'Navy Trust',colors:['#1E3A5F','#1E40AF','#0F172A','#EFF6FF','#93C5FD']},
+    {name:'Gold Standard',colors:['#F59E0B','#B45309','#451A03','#FFFBEB','#FDE68A']}
+  ],
+  education: [
+    {name:'Scholar Purple',colors:['#8B5CF6','#7C3AED','#1E1B4B','#F5F3FF','#C4B5FD']},
+    {name:'Campus Blue',colors:['#3B82F6','#2563EB','#1E3A8A','#EFF6FF','#93C5FD']},
+    {name:'Growth Green',colors:['#34D399','#10B981','#064E3B','#ECFDF5','#6EE7B7']}
+  ],
+  creative: [
+    {name:'Creative Fuchsia',colors:['#D946EF','#A21CAF','#1E1B4B','#FDF4FF','#F0ABFC']},
+    {name:'Sunset Warm',colors:['#F97316','#EAB308','#1C1917','#FFFBEB','#FDE68A']},
+    {name:'Pop Pink',colors:['#EC4899','#DB2777','#500724','#FDF2F8','#F9A8D4']}
+  ],
+  food: [
+    {name:'Appetizing Red',colors:['#EF4444','#DC2626','#1C1917','#FEF2F2','#FCA5A5']},
+    {name:'Fresh Herb',colors:['#22C55E','#16A34A','#052E16','#F0FDF4','#86EFAC']},
+    {name:'Warm Sienna',colors:['#D97706','#B45309','#451A03','#FFFBEB','#FDE68A']}
+  ],
+  fitness: [
+    {name:'Energy Red',colors:['#EF4444','#DC2626','#1C1917','#FEF2F2','#FCA5A5']},
+    {name:'Power Orange',colors:['#F97316','#EA580C','#431407','#FFF7ED','#FDBA74']},
+    {name:'Neon Lime',colors:['#84CC16','#65A30D','#1A2E05','#F7FEE7','#BEF264']}
+  ],
+  legal: [
+    {name:'Legal Navy',colors:['#1E3A5F','#1E40AF','#0F172A','#EFF6FF','#93C5FD']},
+    {name:'Justice Slate',colors:['#475569','#334155','#0F172A','#F8FAFC','#94A3B8']},
+    {name:'Counsel Gold',colors:['#B45309','#92400E','#451A03','#FFFBEB','#FDE68A']}
+  ],
+  realestate: [
+    {name:'Estate Green',colors:['#15803D','#166534','#052E16','#F0FDF4','#86EFAC']},
+    {name:'Brick Warm',colors:['#B45309','#92400E','#431407','#FFFBEB','#FDBA74']},
+    {name:'Sky Trust',colors:['#0284C7','#0369A1','#0C4A6E','#F0F9FF','#7DD3FC']}
+  ],
+  travel: [
+    {name:'Ocean Blue',colors:['#0EA5E9','#0284C7','#0C4A6E','#F0F9FF','#7DD3FC']},
+    {name:'Sunset Coral',colors:['#F97316','#EA580C','#9A3412','#FFF7ED','#FDBA74']},
+    {name:'Tropical Teal',colors:['#14B8A6','#0D9488','#042F2E','#F0FDFA','#5EEAD4']}
+  ],
+  marketing: [
+    {name:'Viral Purple',colors:['#8B5CF6','#7C3AED','#1E1B4B','#F5F3FF','#C4B5FD']},
+    {name:'Growth Green',colors:['#22C55E','#16A34A','#052E16','#F0FDF4','#86EFAC']},
+    {name:'Impact Orange',colors:['#F97316','#EA580C','#431407','#FFF7ED','#FDBA74']}
+  ],
+  hr: [
+    {name:'People Teal',colors:['#14B8A6','#0D9488','#042F2E','#F0FDFA','#5EEAD4']},
+    {name:'Culture Purple',colors:['#8B5CF6','#7C3AED','#1E1B4B','#F5F3FF','#C4B5FD']},
+    {name:'Warm Amber',colors:['#F59E0B','#D97706','#451A03','#FFFBEB','#FDE68A']}
+  ]
+};
+
+const INDUSTRY_AUDIENCES = {
+  saas: ['SaaS founders','product managers','dev teams','CTOs','growth marketers','startup operators'],
+  ecommerce: ['online sellers','DTC brands','Shopify merchants','marketplace vendors','retail entrepreneurs'],
+  health: ['healthcare providers','wellness seekers','patients','health coaches','medical professionals','fitness enthusiasts'],
+  finance: ['investors','financial advisors','CFOs','traders','fintech founders','wealth managers'],
+  education: ['educators','students','course creators','training managers','edtech founders','lifelong learners'],
+  creative: ['designers','content creators','artists','creative directors','freelance creatives','agencies'],
+  food: ['restaurant owners','food entrepreneurs','home cooks','chefs','food bloggers','meal prep enthusiasts'],
+  fitness: ['gym owners','personal trainers','athletes','fitness enthusiasts','wellness coaches','sports teams'],
+  legal: ['attorneys','law firms','paralegals','in-house counsel','compliance officers','legal tech founders'],
+  realestate: ['real estate agents','brokers','property managers','home buyers','investors','developers'],
+  travel: ['travelers','travel agents','tour operators','hospitality managers','digital nomads','adventure seekers'],
+  marketing: ['marketers','growth hackers','content creators','brand managers','CMOs','agency founders'],
+  hr: ['HR managers','recruiters','people ops leads','talent acquisition teams','CHROs','HR tech founders']
+};
+
+const COMPETITOR_HINTS = {
+  saas: ['Positioned against legacy enterprise tools','Competes with Notion, Airtable, Monday','Differentiates from generic project management'],
+  ecommerce: ['Alternative to Shopify for niche sellers','Competes with BigCommerce, WooCommerce','Targets underserved marketplace segments'],
+  health: ['Differentiates from generic wellness apps','Competes with Headspace, Calm, MyFitnessPal','Targets specific health conditions or demographics'],
+  finance: ['Alternative to traditional banking/advisory','Competes with Robinhood, Wealthfront, Mint','Targets underbanked or crypto-native users'],
+  education: ['Competes with Coursera, Udemy, Skillshare','Targets specific learning gaps or audiences','Differentiates through AI-personalized learning'],
+  creative: ['Alternative to Adobe Creative Cloud','Competes with Canva, Figma, Framer','Targets solo creators and small studios'],
+  food: ['Competes with DoorDash, UberEats, HelloFresh','Targets specific cuisine or dietary needs','Differentiates through community or sourcing'],
+  fitness: ['Alternative to Peloton, Nike Training Club','Competes with Strava, Fitbit, MyFitnessPal','Targets specific training modalities or demographics'],
+  legal: ['Alternative to LegalZoom, Rocket Lawyer','Competes with Clio, MyCase, PracticePanther','Targets underserved legal niches or solo practitioners'],
+  realestate: ['Alternative to Zillow, Redfin, Realtor.com','Competes with Compass, Keller Williams tech','Targets niche property markets or agent workflows'],
+  travel: ['Alternative to Booking.com, Expedia','Competes with Airbnb, TripAdvisor, Google Travel','Targets niche travel segments or personalized experiences'],
+  marketing: ['Alternative to HubSpot, Mailchimp','Competes with Semrush, Hootsuite, Buffer','Targets specific marketing channels or SMB segments'],
+  hr: ['Alternative to BambooHR, Workday','Competes with Gusto, Rippling, Lever','Targets specific HR workflows or company sizes']
+};
+
+// ==================== GENERAL WORD BANKS ====================
+const AUDIENCES = ['founders','developers','marketers','creators','designers','entrepreneurs','teams','freelancers','startups','agencies','operators','builders','makers','leaders','innovators','solopreneurs'];
+const VERBS = ['build','create','launch','grow','scale','ship','design','craft','forge','spark','ignite','boost','elevate','power','drive','automate','streamline','simplify','transform','optimize','unlock','amplify','accelerate','connect','deliver','discover','master','pioneer','revolutionize','supercharge'];
+const ADJECTIVES = ['smart','fast','simple','powerful','elegant','bold','clean','modern','seamless','brilliant','intuitive','sleek','agile','dynamic','effortless','reliable','beautiful','delightful','precise','adaptive'];
+const NOUNS_GENERIC = ['workflow','experience','platform','solution','product','tool','engine','system','pipeline','dashboard','insight','impact','growth','results','success','performance','strategy','journey','vision','future'];
+
+const TAGLINE_TEMPLATES = [
   '{verb} {adj} {noun} — effortlessly',
   'Where {noun} meets {noun2}',
   'The {adj} way to {verb}',
@@ -415,269 +666,629 @@ const taglineTemplates = [
   '{noun} that {verb}s itself',
   'The future of {noun} is here',
   'Stop guessing. Start {verb}ing.',
-  '{adj}, fast, {adj2}',
+  '{adj}. Fast. {adj2}.',
   'Built for {audience} who {verb}',
-  'One {noun} to rule them all',
-  '{verb} with confidence'
+  'One platform to {verb} them all',
+  '{verb} with confidence',
+  'The {adj} advantage for {audience}',
+  'Reimagine your {noun}',
+  '{verb} what matters. Automate the rest.',
+  'Where {audience} come to {verb}',
+  'Your {noun} deserves to be {adj}',
+  'Less guesswork. More {noun}.',
+  '{adj} {noun} starts here',
+  'The {noun} engine for {audience}',
+  'Finally — {noun} that just works',
+  'Goodbye complexity. Hello {noun}.',
+  '{verb} faster than your competition',
+  'The {adj} standard for {noun}',
+  '{noun} without the headache',
+  'Built by {audience}, for {audience}',
+  'Every {noun}, {adj} by default'
 ];
 
-const brandVoices = ['Professional','Playful','Bold'];
+const DOMAIN_TLDS = ['.com','.io','.ai','.co','.app','.dev','.so','.xyz','.tech','.me'];
 
-const colorPalettes = [
-  {name:'Ocean Breeze',colors:['#0EA5E9','#06B6D4','#0F172A','#F0F9FF','#CBD5E1']},
-  {name:'Sunset Glow',colors:['#F97316','#EAB308','#1C1917','#FFFBEB','#A16207']},
-  {name:'Forest Depth',colors:['#22C55E','#15803D','#052E16','#F0FDF4','#86EFAC']},
-  {name:'Royal Purple',colors:['#A855F7','#7C3AED','#1E1B4B','#FAF5FF','#C084FC']},
-  {name:'Cherry Pop',colors:['#EF4444','#F43F5E','#1C1917','#FFF1F2','#FDA4AF']},
-  {name:'Midnight Gold',colors:['#F59E0B','#D97706','#0A0A0A','#FFFBEB','#FDE68A']},
-  {name:'Arctic Blue',colors:['#3B82F6','#1D4ED8','#0F172A','#EFF6FF','#93C5FD']},
-  {name:'Coral Reef',colors:['#FB923C','#F472B6','#1E1B4B','#FFF7ED','#FDBA74']},
-  {name:'Neon Mint',colors:['#34D399','#10B981','#064E3B','#ECFDF5','#6EE7B7']},
-  {name:'Slate Modern',colors:['#64748B','#475569','#0F172A','#F8FAFC','#94A3B8']}
-];
-
-const audiences = ['founders','developers','marketers','creators','designers','entrepreneurs','teams','freelancers','startups','agencies'];
-const verbs = ['build','create','launch','grow','scale','ship','design','craft','forge','spark','ignite','boost','elevate','power','drive','automate','streamline','simplify','transform','optimize'];
-const adjectives = ['smart','fast','simple','powerful','elegant','bold','clean','modern','seamless','brilliant','intuitive','sleek','agile','dynamic','effortless'];
-const nouns_generic = ['workflow','experience','platform','solution','product','tool','engine','system','pipeline','dashboard'];
-
-// --- Keyword extraction ---
-const stopWords = new Set(['a','an','the','is','are','was','were','be','been','being','have','has','had','do','does','did','will','would','shall','should','may','might','must','can','could','of','in','to','for','with','on','at','by','from','as','into','through','during','before','after','above','below','between','out','off','over','under','again','further','then','once','here','there','when','where','why','how','all','both','each','few','more','most','other','some','such','no','nor','not','only','own','same','so','than','too','very','just','about','and','but','or','if','while','that','which','who','whom','this','these','those','am','it','its','i','my','me','we','our','they','their','them','what','up','make','makes','making','tool','app','application','software','service','product','platform','website','business','company','startup','help','helps','people','users','customers','better','best','good','great','new','get','use','using','want','need','like','way','thing','things']);
+// ==================== KEYWORD EXTRACTION ====================
+const STOP_WORDS = new Set(['a','an','the','is','are','was','were','be','been','being','have','has','had','do','does','did','will','would','shall','should','may','might','must','can','could','of','in','to','for','with','on','at','by','from','as','into','through','during','before','after','above','below','between','out','off','over','under','again','further','then','once','here','there','when','where','why','how','all','both','each','few','more','most','other','some','such','no','nor','not','only','own','same','so','than','too','very','just','about','and','but','or','if','while','that','which','who','whom','this','these','those','am','it','its','i','my','me','we','our','they','their','them','what','up','make','makes','making','tool','app','application','software','service','product','platform','website','business','company','startup','help','helps','people','users','customers','better','best','good','great','new','get','use','using','want','need','like','way','thing','things','really','also','able','based','allows','lets','helps','provides','offers','enables','gives','takes']);
 
 function extractKeywords(text) {
-  const words = text.toLowerCase().replace(/[^a-z0-9\s]/g,'').split(/\s+/).filter(w => w.length > 2 && !stopWords.has(w));
+  const words = text.toLowerCase().replace(/[^a-z0-9\s]/g,'').split(/\s+/).filter(w => w.length > 2 && !STOP_WORDS.has(w));
   const unique = [...new Set(words)];
   return unique.length > 0 ? unique : ['spark','nova','flow'];
 }
 
-// --- Utility ---
+// ==================== UTILITIES ====================
 function pick(arr) { return arr[Math.floor(Math.random()*arr.length)]; }
-function pickN(arr,n) { const s=[...arr]; for(let i=s.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[s[i],s[j]]=[s[j],s[i]];} return s.slice(0,n); }
-function capitalize(s) { return s.charAt(0).toUpperCase()+s.slice(1); }
-function titleCase(s) { return s.split(/[\s-]+/).map(capitalize).join(''); }
+function pickN(arr,n) { const s=[...arr]; for(let i=s.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[s[i],s[j]]=[s[j],s[i]];} return s.slice(0,Math.min(n,s.length)); }
+function capitalize(s) { return s.charAt(0).toUpperCase()+s.slice(1).toLowerCase(); }
+function titleCase(s) { return s.split(/[\s-]+/).map(w=>w.charAt(0).toUpperCase()+w.slice(1)).join(''); }
+function allPrefixes() { return Object.values(PREFIXES).flat(); }
 
-// --- Name Generation Strategies ---
-function genCompound(keywords) {
+// ==================== NAME QUALITY SCORING ====================
+const VOWELS = new Set('aeiouAEIOU');
+function scorePronounceable(name) {
+  const clean = name.replace(/[^a-zA-Z]/g,'');
+  if (clean.length === 0) return 0;
+  // Vowel ratio (ideal: 0.3-0.5)
+  const vowelCount = [...clean].filter(c => VOWELS.has(c)).length;
+  const ratio = vowelCount / clean.length;
+  let score = 0;
+  if (ratio >= 0.25 && ratio <= 0.55) score += 40;
+  else if (ratio >= 0.15 && ratio <= 0.65) score += 20;
+  // Consonant cluster penalty
+  const clusters = clean.match(/[^aeiouAEIOU]{4,}/g);
+  if (!clusters) score += 30;
+  else if (clusters.length === 1) score += 15;
+  // No triple letters
+  if (!/(.)\1\1/.test(clean)) score += 10;
+  // Length (4-12 ideal)
+  if (clean.length >= 4 && clean.length <= 12) score += 20;
+  else if (clean.length >= 3 && clean.length <= 16) score += 10;
+  return Math.min(100, score);
+}
+
+function scoreName(name) {
+  const clean = name.replace(/[^a-zA-Z]/g,'');
+  let total = 0;
+  total += scorePronounceable(name);
+  // Bonus for ending in vowel (easier to say)
+  if (VOWELS.has(clean[clean.length-1])) total += 5;
+  // Penalty for being too generic
+  const generic = ['app','hub','pro','max','net','web'];
+  if (generic.includes(clean.toLowerCase())) total -= 20;
+  return Math.max(0, Math.min(100, total));
+}
+
+function getScoreClass(score) {
+  if (score >= 75) return 'score-high';
+  if (score >= 50) return 'score-mid';
+  return 'score-low';
+}
+
+function getScoreLabel(score) {
+  if (score >= 85) return '🔥 Excellent';
+  if (score >= 75) return '✨ Great';
+  if (score >= 60) return '👍 Good';
+  if (score >= 45) return '🤷 Fair';
+  return '⚠️ Weak';
+}
+
+// ==================== 12 NAME GENERATION STRATEGIES ====================
+
+// Style categories for filtering
+const STYLE_MAP = {
+  'Compound': 'tech',
+  'Tech Combo': 'tech',
+  'Portmanteau': 'creative',
+  'Abstract': 'creative',
+  'Domain-Style': 'tech',
+  'Metaphor': 'creative',
+  'Power Word': 'professional',
+  'Keyword+Prefix': 'tech',
+  'Acronym': 'professional',
+  'Rhyming': 'playful',
+  'Alliterative': 'playful',
+  'Mashup': 'creative',
+  'Syllable Blend': 'creative',
+  'Verb+Noun': 'professional',
+  'Cultural': 'creative',
+  'Numeric': 'tech'
+};
+
+// 1. Compound: keyword + suffix
+function genCompound(keywords, industry) {
   const kw = capitalize(pick(keywords));
-  return kw + pick(suffixes);
+  const suf = pick(SUFFIXES.filter(s => s.length <= 5) || SUFFIXES);
+  return { name: kw + suf, style: 'Compound' };
 }
 
-function genPrefixSuffix(keywords) {
-  return pick(prefixes) + pick(suffixes);
+// 2. Tech Combo: tech prefix + suffix
+function genTechCombo(keywords, industry) {
+  const vibes = industry === 'creative' ? 'creative' : industry === 'health' ? 'nature' : industry === 'fitness' ? 'power' : 'tech';
+  const pre = pick(PREFIXES[vibes] || PREFIXES.tech);
+  const suf = pick(SUFFIXES.slice(0, 100)); // higher-quality suffixes
+  return { name: pre + suf, style: 'Tech Combo' };
 }
 
-function genPortmanteau(keywords) {
-  const kw = pick(keywords);
-  const endings = ['ify','ly','ify','io','er','eo','ia','ity','ello','ova','ana','ize','ist','ful','ous'];
-  const base = kw.length > 4 ? kw.slice(0, Math.ceil(kw.length*0.6)) : kw;
-  return capitalize(base) + pick(endings);
+// 3. Portmanteau: actually blend two words
+function genPortmanteau(keywords, industry) {
+  let w1, w2;
+  if (keywords.length >= 2) {
+    const pair = pickN(keywords, 2);
+    w1 = pair[0]; w2 = pair[1];
+  } else {
+    w1 = keywords[0];
+    w2 = pick(INDUSTRY_WORDS[industry] || INDUSTRY_WORDS.saas);
+  }
+  // Find blend point: end of w1 overlaps start of w2, or splice at vowel
+  const cap1 = capitalize(w1);
+  const cap2 = w2.toLowerCase();
+  // Try overlap
+  for (let i = 1; i < Math.min(w1.length, w2.length); i++) {
+    if (w1.slice(-i).toLowerCase() === cap2.slice(0, i)) {
+      return { name: cap1 + cap2.slice(i), style: 'Portmanteau' };
+    }
+  }
+  // Splice: take 50-70% of w1 + 40-60% of w2
+  const cut1 = Math.ceil(w1.length * (0.5 + Math.random() * 0.2));
+  const cut2 = Math.floor(w2.length * (0.3 + Math.random() * 0.2));
+  return { name: capitalize(w1.slice(0, cut1) + w2.slice(cut2)), style: 'Portmanteau' };
 }
 
-function genAbstract() {
-  const root = pick(abstractRoots);
-  const endings = ['','o','a','i','ix','on','is','us','al','ar','io','yx','um'];
-  return root + pick(endings);
+// 4. Abstract brandable
+function genAbstract(keywords, industry) {
+  const root = pick(ABSTRACT_ROOTS);
+  const endings = ['','o','a','i','ix','on','is','al','ar','io','yx','um','ia','eo','ik','os','el','an'];
+  return { name: root + pick(endings), style: 'Abstract' };
 }
 
-function genDomainStyle(keywords) {
-  const kw = pick(keywords).toLowerCase();
-  const prefix = pick(['get','try','use','go','my','the','hey','ask','run','']);
+// 5. Domain-style: prefix + keyword + TLD
+function genDomainStyle(keywords, industry) {
+  const kw = pick(keywords).toLowerCase().slice(0, 8);
+  const prefix = pick(['get','try','use','go','my','hey','run','']);
   const tld = pick(['.ai','.io','.co','.app','.dev','.so']);
-  const name = prefix ? prefix+kw : kw;
-  return name + tld;
+  const name = prefix ? prefix + kw : kw;
+  return { name: name + tld, style: 'Domain-Style' };
 }
 
-function genMetaphor(keywords) {
-  const metaphors = ['Stream','Flow','Spark','Wave','Pulse','Beam','Flame','Storm','Wind','Light','Star','Cloud','Sky','Peak','Rise','Drift','Glow','Arc','Tide','Blaze'];
+// 6. Metaphor: nature/power word + keyword
+function genMetaphor(keywords, industry) {
+  const metaphorWords = [...PREFIXES.nature.slice(0,20), ...PREFIXES.power.slice(0,20)];
   const kw = capitalize(pick(keywords));
-  return Math.random()>0.5 ? kw+pick(metaphors) : pick(metaphors)+kw;
+  const met = pick(metaphorWords);
+  return { name: Math.random() > 0.5 ? kw + met : met + kw, style: 'Metaphor' };
 }
 
-function genActionWord(keywords) {
-  const actions = ['Smart','Genius','IQ','Pro','Plus','Max','Prime','Ultra','Turbo','Hyper','Auto','Quick','Swift','Rapid','Super'];
+// 7. Power Word: keyword + power suffix
+function genPowerWord(keywords, industry) {
+  const powers = ['Smart','Genius','IQ','Pro','Plus','Max','Prime','Ultra','Turbo','Hyper','Auto','Swift','Rapid','Super','Elite','Alpha','Omega','Force','Zero','One'];
   const kw = capitalize(pick(keywords));
-  return kw + pick(actions);
+  return { name: Math.random() > 0.4 ? kw + pick(powers) : pick(powers) + kw, style: 'Power Word' };
 }
 
-function genKeywordPrefix(keywords) {
+// 8. Keyword + Prefix
+function genKeywordPrefix(keywords, industry) {
   const kw = capitalize(pick(keywords));
-  return pick(prefixes) + kw;
+  const pre = pick(allPrefixes());
+  return { name: pre + kw, style: 'Keyword+Prefix' };
 }
 
-const strategies = [genCompound,genPrefixSuffix,genPortmanteau,genAbstract,genDomainStyle,genMetaphor,genActionWord,genKeywordPrefix];
+// 9. Acronym-style: generate memorable letter combos from description
+function genAcronym(keywords, industry) {
+  const letters = keywords.map(w => w[0].toUpperCase());
+  const extras = ['X','Q','Z','V','K'];
+  while (letters.length < 3) letters.push(pick(extras));
+  const acronym = pickN(letters, Math.min(4, letters.length)).join('');
+  // Make it pronounceable by adding vowels
+  const styles = [
+    acronym + pick(['ly','ify','io','ai','ex','os','is']),
+    acronym.slice(0,2) + pick(['a','e','i','o','u']) + acronym.slice(2),
+    acronym + pick(['Hub','Lab','Pro','HQ','Go'])
+  ];
+  return { name: pick(styles), style: 'Acronym' };
+}
 
-// --- Tagline Generation ---
-function generateTagline(name, keywords) {
-  let template = pick(taglineTemplates);
+// 10. Rhyming pairs
+function genRhyming(keywords, industry) {
+  const rhymePairs = [
+    ['Pay','Way'],['Bit','Fit'],['Flow','Grow'],['Snap','Map'],['Boost','Roost'],
+    ['Spark','Mark'],['Deal','Real'],['Bold','Gold'],['Track','Stack'],['Rise','Wise'],
+    ['Link','Think'],['Mint','Sprint'],['Dash','Flash'],['Plan','Scan'],['Peak','Seek'],
+    ['Buzz','Fuzz'],['Glow','Pro'],['Ship','Tip'],['Core','More'],['Cast','Fast']
+  ];
+  const pair = pick(rhymePairs);
+  const kw = capitalize(pick(keywords)).slice(0, 5);
+  return { name: kw + pair[0] + pair[1], style: 'Rhyming' };
+}
+
+// 11. Alliterative: same starting letter
+function genAlliterative(keywords, industry) {
   const kw = pick(keywords);
-  template = template.replace('{verb}', pick(verbs));
-  template = template.replace('{adj}', pick(adjectives));
-  template = template.replace('{adj2}', pick(adjectives));
-  template = template.replace('{noun}', pick([...nouns_generic, kw]));
-  template = template.replace('{noun2}', pick(nouns_generic));
-  template = template.replace('{audience}', pick(audiences));
-  return template;
+  const letter = kw[0].toUpperCase();
+  const allWords = allPrefixes().filter(p => p[0].toUpperCase() === letter);
+  if (allWords.length > 0) {
+    return { name: pick(allWords) + capitalize(kw), style: 'Alliterative' };
+  }
+  // Fallback: use the keyword letter with a suffix
+  const suffixes2 = SUFFIXES.filter(s => s[0] && s[0].toUpperCase() === letter);
+  if (suffixes2.length > 0) {
+    return { name: capitalize(kw) + pick(suffixes2), style: 'Alliterative' };
+  }
+  return { name: capitalize(kw) + capitalize(kw.slice(-3)) + 'ly', style: 'Alliterative' };
 }
 
-// --- Domain Suggestion ---
+// 12. Descriptive Mashup: combine industry word with clean prefix
+function genMashup(keywords, industry) {
+  const indWords = INDUSTRY_WORDS[industry] || INDUSTRY_WORDS.saas;
+  const word = capitalize(pick(indWords));
+  const pre = pick(PREFIXES.clean);
+  return { name: pre + word, style: 'Mashup' };
+}
+
+// 13. Syllable Blend: mix syllables from keywords with abstract roots
+function genSyllableBlend(keywords, industry) {
+  const kw = pick(keywords);
+  const root = pick(ABSTRACT_ROOTS);
+  // Take first syllable(s) of keyword and last syllable(s) of root
+  const kwCut = Math.ceil(kw.length * 0.4);
+  const rootCut = Math.floor(root.length * 0.5);
+  const blended = capitalize(kw.slice(0, kwCut)) + root.slice(rootCut).toLowerCase();
+  return { name: blended, style: 'Syllable Blend' };
+}
+
+// 14. Verb+Noun: action-oriented names
+function genVerbNoun(keywords, industry) {
+  const actionVerbs = ['Ship','Launch','Build','Spark','Snap','Push','Pull','Drop','Flip','Dash','Grab','Lift','Zap','Pop','Tap','Kick','Bolt','Cast','Lock','Spin'];
+  const indWords = INDUSTRY_WORDS[industry] || INDUSTRY_WORDS.saas;
+  const noun = capitalize(pick([...indWords.slice(0,15), ...keywords]));
+  const verb = pick(actionVerbs);
+  return { name: verb + noun, style: 'Verb+Noun' };
+}
+
+// 15. Cultural: world-influenced brandable names
+function genCultural(keywords, industry) {
+  const culturalRoots = [
+    {prefix:'Kai',origin:'ocean/change'},  {prefix:'Zen',origin:'calm'},
+    {prefix:'Kira',origin:'light'},        {prefix:'Nova',origin:'new star'},
+    {prefix:'Sora',origin:'sky'},          {prefix:'Mara',origin:'sea'},
+    {prefix:'Rune',origin:'mystery'},      {prefix:'Veda',origin:'knowledge'},
+    {prefix:'Kova',origin:'strength'},     {prefix:'Asha',origin:'hope'},
+    {prefix:'Tao',origin:'way'},           {prefix:'Lux',origin:'light'},
+    {prefix:'Vita',origin:'life'},         {prefix:'Ora',origin:'golden'},
+    {prefix:'Nami',origin:'wave'},         {prefix:'Zuri',origin:'beautiful'},
+    {prefix:'Amara',origin:'grace'},       {prefix:'Bodhi',origin:'awakening'},
+    {prefix:'Sakura',origin:'bloom'},      {prefix:'Terra',origin:'earth'}
+  ];
+  const root = pick(culturalRoots);
+  const endings = ['','ly','fy','hub','ai','co','app','io','x'];
+  return { name: root.prefix + pick(endings), style: 'Cultural' };
+}
+
+// 16. Numeric: number-infused brand names
+function genNumeric(keywords, industry) {
+  const numberWords = ['One','Zero','Seven','Eight','Nine','Ten','Duo','Tri','Quad','Hex','Octo'];
+  const numberSymbols = ['1','0','3','7','8','360','42','99','404','101','10x','2x'];
+  const kw = capitalize(pick(keywords));
+  const useSymbol = Math.random() > 0.5;
+  if (useSymbol) {
+    const num = pick(numberSymbols);
+    return { name: Math.random() > 0.5 ? kw + num : num + kw, style: 'Numeric' };
+  }
+  const word = pick(numberWords);
+  return { name: Math.random() > 0.5 ? kw + word : word + kw, style: 'Numeric' };
+}
+
+const ALL_STRATEGIES = [genCompound, genTechCombo, genPortmanteau, genAbstract, genDomainStyle, genMetaphor, genPowerWord, genKeywordPrefix, genAcronym, genRhyming, genAlliterative, genMashup, genSyllableBlend, genVerbNoun, genCultural, genNumeric];
+
+// ==================== TAGLINE GENERATION ====================
+function generateTagline(name, keywords, industry) {
+  let template = pick(TAGLINE_TEMPLATES);
+  const kw = pick(keywords);
+  const indWord = pick(INDUSTRY_WORDS[industry] || INDUSTRY_WORDS.saas);
+  template = template.replace('{verb}', pick(VERBS));
+  template = template.replace('{adj}', pick(ADJECTIVES));
+  template = template.replace('{adj2}', pick(ADJECTIVES));
+  template = template.replace('{noun}', pick([...NOUNS_GENERIC, kw, indWord]));
+  template = template.replace('{noun2}', pick(NOUNS_GENERIC));
+  template = template.replace('{audience}', pick(INDUSTRY_AUDIENCES[industry] || AUDIENCES));
+  // Capitalize first letter
+  return template.charAt(0).toUpperCase() + template.slice(1);
+}
+
+function generate3Taglines(name, keywords, industry) {
+  const tags = new Set();
+  let attempts = 0;
+  while (tags.size < 3 && attempts < 20) {
+    tags.add(generateTagline(name, keywords, industry));
+    attempts++;
+  }
+  return [...tags];
+}
+
+// ==================== DOMAIN & AVAILABILITY ====================
 function suggestDomain(name) {
   const clean = name.replace(/[^a-zA-Z0-9]/g,'').toLowerCase();
-  if(name.includes('.')) return name; // already domain-style
-  const tld = pick(domainTLDs);
+  if (name.includes('.')) return name;
+  const tld = pick(DOMAIN_TLDS.slice(0,6)); // prefer top TLDs
   return clean + tld;
 }
 
-// --- Domain Availability (simulated) ---
 function simulateAvailability() {
   const r = Math.random();
-  if(r < 0.35) return 'available';
-  if(r < 0.7) return 'premium';
+  if (r < 0.3) return 'available';
+  if (r < 0.65) return 'premium';
   return 'taken';
 }
 
-// --- Generate a set of names ---
-function generateNameSet(description) {
-  const keywords = extractKeywords(description);
-  const names = [];
-  const usedNames = new Set();
-  const strategyOrder = pickN(strategies, strategies.length);
+// ==================== FAVORITES SYSTEM ====================
+function getFavorites() {
+  try { return JSON.parse(localStorage.getItem('nameforge_favorites') || '[]'); }
+  catch { return []; }
+}
+function saveFavorites(favs) { localStorage.setItem('nameforge_favorites', JSON.stringify(favs)); }
+function isFavorited(name) { return getFavorites().includes(name); }
 
-  // Generate 10 names using different strategies
-  let attempts = 0;
-  while(names.length < 10 && attempts < 50) {
-    const strategy = strategyOrder[names.length % strategyOrder.length];
-    let name = strategy(keywords);
-    
-    // Clean up domain-style names
-    const isDomainStyle = name.includes('.');
-    const nameKey = name.toLowerCase().replace(/[^a-z]/g,'');
-    
-    if(!usedNames.has(nameKey) && name.length > 2 && name.length < 25) {
-      usedNames.add(nameKey);
-      const domain = suggestDomain(name);
-      const availability = simulateAvailability();
-      const voice = pick(brandVoices);
-      const palette = pick(colorPalettes);
-      const tagline = generateTagline(name, keywords);
-      const audience = pickN(audiences, 2).join(' & ');
-      
-      names.push({ name, domain, availability, tagline, voice, palette, audience, isDomainStyle });
-    }
-    attempts++;
+function toggleFavorite(name, btn) {
+  let favs = getFavorites();
+  if (favs.includes(name)) {
+    favs = favs.filter(f => f !== name);
+    btn.textContent = '🤍';
+    btn.classList.remove('favorited');
+  } else {
+    favs.push(name);
+    btn.textContent = '❤️';
+    btn.classList.add('favorited');
   }
-  return names;
+  saveFavorites(favs);
+  updateFavoritesBar();
 }
 
-// --- UI ---
+function updateFavoritesBar() {
+  const favs = getFavorites();
+  const bar = document.getElementById('favoritesBar');
+  const countEl = document.getElementById('favCount');
+  if (favs.length > 0) {
+    bar.classList.remove('hidden');
+    countEl.textContent = `${favs.length} favorite${favs.length !== 1 ? 's' : ''}`;
+  } else {
+    bar.classList.add('hidden');
+  }
+}
+
+function exportFavorites() {
+  const favs = getFavorites();
+  if (favs.length === 0) return;
+  const text = 'NameForge Favorites\n' + '='.repeat(20) + '\n\n' + favs.map((f,i) => `${i+1}. ${f}`).join('\n') + '\n\nGenerated by NameForge — https://atalovesyou.github.io/nameforge/';
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => {
+      showToast('Favorites copied to clipboard!');
+    });
+  } else {
+    const ta = document.createElement('textarea');
+    ta.value = text;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+    showToast('Favorites copied to clipboard!');
+  }
+}
+
+function clearFavorites() {
+  if (!confirm('Clear all favorites?')) return;
+  saveFavorites([]);
+  updateFavoritesBar();
+  document.querySelectorAll('.heart-btn').forEach(btn => {
+    btn.textContent = '🤍';
+    btn.classList.remove('favorited');
+  });
+}
+
+function showToast(msg) {
+  const toast = document.createElement('div');
+  toast.textContent = msg;
+  toast.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:rgba(245,158,11,0.95);color:#0a0a0a;padding:10px 24px;border-radius:12px;font-size:14px;font-weight:600;z-index:9999;animation:fadeIn .3s ease';
+  document.body.appendChild(toast);
+  setTimeout(() => { toast.style.opacity = '0'; toast.style.transition = 'opacity .3s'; setTimeout(() => toast.remove(), 300); }, 2000);
+}
+
+function copyName(name, btn) {
+  navigator.clipboard.writeText(name).then(() => {
+    const orig = btn.textContent;
+    btn.textContent = '✓ Copied';
+    btn.style.color = '#4ade80';
+    setTimeout(() => { btn.textContent = orig; btn.style.color = ''; }, 1500);
+  });
+}
+
+// ==================== GENERATION COUNTER ====================
+function getGenCount() { return parseInt(localStorage.getItem('nameforge_gen_count') || '0'); }
+function incrementGenCount() { const c = getGenCount() + 1; localStorage.setItem('nameforge_gen_count', c.toString()); return c; }
+
+// ==================== STYLE FILTER ====================
+let currentFilter = 'all';
+function filterByStyle(style) {
+  currentFilter = style;
+  document.querySelectorAll('.filter-chip').forEach(c => {
+    c.classList.toggle('active', c.dataset.filter === style);
+  });
+  document.querySelectorAll('.name-card-wrapper').forEach(card => {
+    const cardStyle = card.dataset.style;
+    if (style === 'all' || cardStyle === style) {
+      card.style.display = '';
+    } else {
+      card.style.display = 'none';
+    }
+  });
+}
+
+// ==================== MAIN GENERATION ====================
 let currentResults = [];
+let currentIndustry = 'saas';
 
 function generateNames() {
   const input = document.getElementById('heroInput').value.trim();
-  if(!input) {
+  if (!input) {
     document.getElementById('heroInput').focus();
     document.getElementById('heroInput').classList.add('ring-2','ring-red-500/50');
-    setTimeout(()=>document.getElementById('heroInput').classList.remove('ring-2','ring-red-500/50'), 2000);
+    setTimeout(() => document.getElementById('heroInput').classList.remove('ring-2','ring-red-500/50'), 2000);
     return;
   }
 
-  // Show loading
   document.getElementById('loadingState').classList.remove('hidden');
   document.getElementById('resultsContainer').classList.add('hidden');
 
-  // Simulate delay for dramatic effect
   setTimeout(() => {
-    currentResults = generateNameSet(input);
-    renderResults(input);
+    currentIndustry = detectIndustry(input);
+    const keywords = extractKeywords(input);
+    currentResults = generateNameSet(keywords, currentIndustry);
+    const count = incrementGenCount();
+    addToHistory(input, currentResults); // NEW: Save to history
+    renderResults(input, count);
     document.getElementById('loadingState').classList.add('hidden');
     document.getElementById('resultsContainer').classList.remove('hidden');
     document.getElementById('resultsContainer').scrollIntoView({behavior:'smooth',block:'start'});
-  }, 800 + Math.random()*600);
+  }, 800 + Math.random() * 600);
 }
 
-function renderResults(query) {
+function generateNameSet(keywords, industry) {
+  const names = [];
+  const usedNames = new Set();
+  const strategyOrder = pickN(ALL_STRATEGIES, ALL_STRATEGIES.length);
+
+  let attempts = 0;
+  while (names.length < 12 && attempts < 80) {
+    const strategy = strategyOrder[names.length % strategyOrder.length];
+    const result = strategy(keywords, industry);
+    let name = result.name;
+    const style = result.style;
+
+    // Clean up
+    name = name.replace(/\s+/g, '');
+    const isDomainStyle = name.includes('.');
+    const nameKey = name.toLowerCase().replace(/[^a-z]/g, '');
+
+    // Quality gate
+    const score = scoreName(name);
+    if (!usedNames.has(nameKey) && nameKey.length >= 3 && name.length < 25 && score >= 35) {
+      usedNames.add(nameKey);
+      const domain = suggestDomain(name);
+      const availability = simulateAvailability();
+      const palette = pick(INDUSTRY_PALETTES[industry] || INDUSTRY_PALETTES.saas);
+      const taglines = generate3Taglines(name, keywords, industry);
+      const audience = pickN(INDUSTRY_AUDIENCES[industry] || AUDIENCES, 2).join(' & ');
+      const positioning = pick(COMPETITOR_HINTS[industry] || COMPETITOR_HINTS.saas);
+      const styleCategory = STYLE_MAP[style] || 'tech';
+
+      names.push({ name, domain, availability, taglines, style, styleCategory, palette, audience, positioning, isDomainStyle, score });
+    }
+    attempts++;
+  }
+
+  // Sort by score descending
+  names.sort((a, b) => b.score - a.score);
+  return names;
+}
+
+// ==================== RENDER ====================
+function renderResults(query, genCount) {
   const grid = document.getElementById('resultsGrid');
   grid.innerHTML = '';
-  document.getElementById('resultsSubtitle').textContent = `Based on: "${query}" — Click any name to explore branding`;
+  document.getElementById('resultsSubtitle').textContent = `Based on: "${query}" — Detected industry: ${currentIndustry.charAt(0).toUpperCase() + currentIndustry.slice(1)}`;
+  document.getElementById('genCounter').textContent = `Generation #${genCount} • ${currentResults.length} names`;
+
+  currentFilter = 'all';
+  document.querySelectorAll('.filter-chip').forEach(c => c.classList.toggle('active', c.dataset.filter === 'all'));
+  updateFavoritesBar();
 
   currentResults.forEach((r, i) => {
     const badgeClass = r.availability === 'available' ? 'badge-available' : r.availability === 'premium' ? 'badge-premium' : 'badge-taken';
     const badgeLabel = r.availability === 'available' ? '✓ Likely Available' : r.availability === 'premium' ? '★ Premium' : '✗ Likely Taken';
-    
+    const scoreClass = getScoreClass(r.score);
+    const scoreLabel = getScoreLabel(r.score);
+    const isFav = isFavorited(r.name);
+
+    const wrapper = document.createElement('div');
+    wrapper.className = 'name-card-wrapper';
+    wrapper.dataset.style = r.styleCategory;
+
     const card = document.createElement('div');
-    card.className = `name-card fade-in stagger-${i+1}`;
-    card.onclick = () => toggleExpand(card, i);
+    card.className = `name-card fade-in stagger-${Math.min(i + 1, 9)}`;
+
     card.innerHTML = `
-      <div class="flex items-start justify-between gap-4">
-        <div class="flex-1">
-          <h3 class="text-xl font-bold mb-1 ${r.isDomainStyle ? 'font-mono' : ''}">${r.name}</h3>
-          <p class="text-sm text-gray-400 font-mono">${r.domain}</p>
+      <div class="flex items-start justify-between gap-3">
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 flex-wrap">
+            <h3 class="text-xl font-bold ${r.isDomainStyle ? 'font-mono' : ''}">${r.name}</h3>
+            <span class="score-badge ${scoreClass}">${scoreLabel}</span>
+          </div>
+          <p class="text-sm text-gray-400 font-mono mt-1">${r.domain}</p>
         </div>
-        <span class="badge ${badgeClass} shrink-0 mt-1">${badgeLabel}</span>
+        <div class="flex items-center gap-2 shrink-0 mt-1">
+          <span class="category-label" style="background:rgba(${r.styleCategory==='tech'?'99,102,241':r.styleCategory==='creative'?'217,70,239':r.styleCategory==='professional'?'245,158,11':'34,197,94'},0.12);color:${r.styleCategory==='tech'?'#818CF8':r.styleCategory==='creative'?'#E879F9':r.styleCategory==='professional'?'#FBBF24':'#4ADE80'}">${r.style}</span>
+          <span class="badge ${badgeClass}">${badgeLabel}</span>
+        </div>
       </div>
-      <p class="text-sm text-gray-300 mt-3 italic">"${r.tagline}"</p>
+      <p class="text-sm text-gray-300 mt-3 italic">"${r.taglines[0]}"</p>
+      <div class="flex items-center gap-2 mt-3">
+        <button class="heart-btn ${isFav ? 'favorited' : ''}" onclick="event.stopPropagation();toggleFavorite('${r.name.replace(/'/g,"\\'")}',this)" title="Favorite">${isFav ? '❤️' : '🤍'}</button>
+        <button class="copy-btn" onclick="event.stopPropagation();copyName('${r.name.replace(/'/g,"\\'")}',this)" title="Copy name">📋 Copy</button>
+      </div>
       <div id="expand-${i}" class="hidden mt-5 pt-5 border-t border-gray-700/50">
-        <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
           <div>
-            <p class="text-xs text-gray-500 uppercase tracking-wide mb-2">Brand Voice</p>
-            <span class="inline-flex items-center gap-1 px-3 py-1 rounded-full text-sm font-medium" style="background:rgba(245,158,11,0.1);color:#fbbf24">
-              ${r.voice === 'Professional' ? '👔' : r.voice === 'Playful' ? '🎮' : '⚡'} ${r.voice}
-            </span>
+            <p class="text-xs text-gray-500 uppercase tracking-wide mb-2">All Taglines</p>
+            <ul class="space-y-1">
+              ${r.taglines.map(t => `<li class="text-sm text-gray-300 italic">"${t}"</li>`).join('')}
+            </ul>
           </div>
           <div>
             <p class="text-xs text-gray-500 uppercase tracking-wide mb-2">Target Audience</p>
-            <p class="text-sm text-gray-300">${capitalize(r.audience)}</p>
+            <p class="text-sm text-gray-300 mb-3">${r.audience}</p>
+            <p class="text-xs text-gray-500 uppercase tracking-wide mb-2">Positioning</p>
+            <p class="text-xs text-gray-400">${r.positioning}</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <p class="text-xs text-gray-500 uppercase tracking-wide mb-2">Color Palette — ${r.palette.name}</p>
+            <div class="flex gap-1.5">
+              ${r.palette.colors.map(c => `<div class="color-dot cursor-pointer" style="background:${c}" title="${c}" onclick="event.stopPropagation();copyName('${c}',this.parentElement)"></div>`).join('')}
+            </div>
           </div>
           <div>
-            <p class="text-xs text-gray-500 uppercase tracking-wide mb-2">Color Palette</p>
-            <p class="text-xs text-gray-400 mb-1">${r.palette.name}</p>
-            <div class="flex gap-1">
-              ${r.palette.colors.map(c => `<div class="color-dot" style="background:${c}" title="${c}"></div>`).join('')}
+            <p class="text-xs text-gray-500 uppercase tracking-wide mb-2">Quality Score</p>
+            <div class="flex items-center gap-2">
+              <div class="flex-1 h-2 rounded-full overflow-hidden" style="background:rgba(255,255,255,0.08)">
+                <div class="h-full rounded-full transition-all" style="width:${r.score}%;background:${r.score>=75?'#4ade80':r.score>=50?'#facc15':'#f87171'}"></div>
+              </div>
+              <span class="text-xs font-mono text-gray-400">${r.score}/100</span>
             </div>
           </div>
         </div>
+        <div class="flex items-center gap-2 mt-5">
+          <button class="pdf-btn flex-1 text-center" onclick="event.stopPropagation();exportBrandKitPDF('${r.name.replace(/'/g,"\\'")}', ${JSON.stringify(r).replace(/"/g, '\"')})" title="Export brand kit as PDF">📄 Export Brand Kit</button>
+          <button class="compare-btn ${compareList.includes(r.name) ? 'selected' : ''}" onclick="event.stopPropagation();toggleCompare('${r.name.replace(/'/g,"\\'")}')" title="Compare with other names">⚖️ Compare</button>
+        </div>
       </div>
     `;
-    grid.appendChild(card);
+    card.onclick = () => toggleExpand(card, i);
+    wrapper.appendChild(card);
+    grid.appendChild(wrapper);
   });
 }
 
 function toggleExpand(card, index) {
   const expandEl = document.getElementById(`expand-${index}`);
   const isExpanded = !expandEl.classList.contains('hidden');
-  
-  // Collapse all
   document.querySelectorAll('[id^="expand-"]').forEach(el => el.classList.add('hidden'));
   document.querySelectorAll('.name-card').forEach(c => c.classList.remove('expanded'));
-  
-  if(!isExpanded) {
+  if (!isExpanded) {
     expandEl.classList.remove('hidden');
     card.classList.add('expanded');
   }
 }
 
-// --- Waitlist ---
+// ==================== WAITLIST ====================
 function joinWaitlist() {
   const email = document.getElementById('waitlistEmail').value.trim();
   const msg = document.getElementById('waitlistMsg');
-  
-  if(!email || !email.includes('@') || !email.includes('.')) {
+  if (!email || !email.includes('@') || !email.includes('.')) {
     msg.textContent = 'Please enter a valid email address';
     msg.className = 'text-sm mt-4 text-red-400';
     msg.classList.remove('hidden');
     return;
   }
-
   let waitlist = JSON.parse(localStorage.getItem('nameforge_waitlist') || '[]');
-  if(waitlist.includes(email)) {
+  if (waitlist.includes(email)) {
     msg.textContent = "You're already on the list! We'll be in touch soon.";
     msg.className = 'text-sm mt-4 text-amber-400';
     msg.classList.remove('hidden');
     return;
   }
-
   waitlist.push(email);
   localStorage.setItem('nameforge_waitlist', JSON.stringify(waitlist));
-  
   msg.textContent = "🎉 You're in! We'll email you when Pro launches.";
   msg.className = 'text-sm mt-4 text-green-400';
   msg.classList.remove('hidden');
@@ -688,15 +1299,329 @@ function joinWaitlist() {
 function updateWaitlistCount() {
   const waitlist = JSON.parse(localStorage.getItem('nameforge_waitlist') || '[]');
   const countEl = document.getElementById('waitlistCount');
-  if(waitlist.length > 0) {
-    const display = waitlist.length + Math.floor(Math.random()*40) + 120; // social proof padding
+  if (waitlist.length > 0) {
+    const display = waitlist.length + Math.floor(Math.random() * 40) + 120;
     countEl.textContent = `🔥 ${display} founders on the waitlist`;
   }
 }
 
-// Init
-updateWaitlistCount();
+// ==================== HISTORY MANAGEMENT ====================
+function getHistory() {
+  try { return JSON.parse(localStorage.getItem('nameforge_history') || '[]'); }
+  catch { return []; }
+}
+function saveHistory(history) { localStorage.setItem('nameforge_history', JSON.stringify(history)); }
+
+function addToHistory(query, results) {
+  const history = getHistory();
+  const session = {
+    id: Date.now(),
+    timestamp: new Date().toISOString(),
+    query: query,
+    industry: currentIndustry,
+    count: results.length,
+    names: results.slice(0, 8) // Save top 8 names for memory efficiency
+  };
+  history.unshift(session); // Add to beginning
+  if (history.length > 20) history.pop(); // Keep last 20 sessions
+  saveHistory(history);
+  updateHistoryDashboard();
+  updateStats();
+}
+
+function updateHistoryDashboard() {
+  const history = getHistory();
+  const container = document.getElementById('historyDashboard');
+  
+  if (history.length === 0) {
+    container.innerHTML = '<p class="text-gray-500 text-sm text-center py-8">No generations yet. Try the name generator above!</p>';
+    return;
+  }
+  
+  container.innerHTML = history.map((session, idx) => `
+    <div class="card p-5 hover:border-amber-400/30 transition cursor-pointer" onclick="loadSession(${session.id})">
+      <div class="flex items-start justify-between gap-3">
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 flex-wrap mb-1">
+            <h4 class="text-base font-semibold text-gray-200 truncate">"${session.query}"</h4>
+            <span class="text-xs px-2 py-0.5 rounded-full" style="background:rgba(99,102,241,0.15);color:#818cf8">${session.industry}</span>
+          </div>
+          <p class="text-xs text-gray-500">${new Date(session.timestamp).toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric',hour:'2-digit',minute:'2-digit'})}</p>
+        </div>
+        <div class="flex items-center gap-2 shrink-0">
+          <span class="text-xs text-amber-400 font-medium">${session.count} names</span>
+          <button onclick="event.stopPropagation();deleteSession(${session.id})" class="text-xs text-gray-500 hover:text-red-400 transition px-2 py-1 rounded" style="background:rgba(255,255,255,0.03)">🗑</button>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function loadSession(id) {
+  const history = getHistory();
+  const session = history.find(s => s.id === id);
+  if (session) {
+    document.getElementById('heroInput').value = session.query;
+    currentIndustry = session.industry;
+    currentResults = session.names.map(name => {
+      const score = scoreName(name.name);
+      const palette = pick(INDUSTRY_PALETTES[name.industry] || INDUSTRY_PALETTES.saas);
+      const taglines = generate3Taglines(name.name, [session.query], name.industry);
+      return { ...name, taglines, palette, score, styleCategory: STYLE_MAP[name.style] || 'tech', industry: session.industry };
+    });
+    renderResults(session.query, incrementGenCount());
+    document.getElementById('resultsContainer').classList.remove('hidden');
+    document.getElementById('resultsContainer').scrollIntoView({behavior:'smooth',block:'start'});
+  }
+}
+
+function deleteSession(id) {
+  if (!confirm('Delete this session?')) return;
+  let history = getHistory();
+  history = history.filter(s => s.id !== id);
+  saveHistory(history);
+  updateHistoryDashboard();
+  updateStats();
+}
+
+function clearHistory() {
+  if (!confirm('Clear all naming history?')) return;
+  saveHistory([]);
+  updateHistoryDashboard();
+  updateStats();
+  showToast('History cleared!');
+}
+
+function exportSessionJSON() {
+  const history = getHistory();
+  if (history.length === 0) {
+    showToast('No history to export!');
+    return;
+  }
+  const text = 'NameForge Naming History\n' + '='.repeat(20) + '\n\n' + history.map(s => 
+    `Date: ${new Date(s.timestamp).toLocaleString()}\nQuery: "${s.query}"\nIndustry: ${s.industry}\nNames (${s.count}): ${s.names.map(n => n.name).join(', ')}\n\n`
+  ).join('\n---\n\n') + '\nGenerated by NameForge v2.0 — https://atalovesyou.github.io/nameforge/';
+  
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(() => showToast('History exported to clipboard!'));
+  } else {
+    const blob = new Blob([text], {type:'text/plain'});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'nameforge-history.txt';
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+}
+
+function updateStats() {
+  const history = getHistory();
+  const totalGens = history.length;
+  const totalNames = history.reduce((sum, s) => sum + s.count, 0);
+  const favs = getFavorites().length;
+  const exports = parseInt(localStorage.getItem('nameforge_exports') || '0');
+  
+  document.getElementById('statTotal').textContent = totalGens;
+  document.getElementById('statNames').textContent = totalNames;
+  document.getElementById('statFavs').textContent = favs;
+  document.getElementById('statExports').textContent = exports;
+}
+
+// ==================== BRAND KIT PDF EXPORT ====================
+function exportBrandKitPDF(name, data) {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({
+    orientation:'landscape',
+    unit:'mm',
+    format:'a4'
+  });
+  
+  // Brand Kit Design
+  const margin = 20;
+  const contentWidth = 277 - (margin * 2);
+  const contentHeight = 190 - (margin * 2);
+  
+  // Header gradient background
+  const gradient = doc.createLinearGradient(0, 0, 0, 40);
+  gradient.addColorStop(0, '#F59E0B');
+  gradient.addColorStop(1, '#D97706');
+  doc.setFillColor(gradient);
+  doc.roundedRect(margin, margin, contentWidth, 40, 5, 2);
+  
+  // Logo & Name
+  doc.setFontSize(28);
+  doc.setTextColor(10, 10, 10);
+  doc.setFont('helvetica', 'bold');
+  doc.text('🔥 NameForge', margin + 10, margin + 28);
+  
+  // Brand Kit Title
+  doc.setFontSize(16);
+  doc.setTextColor(255, 255, 255);
+  doc.text('Brand Identity Guide', margin, margin + 45);
+  doc.setFontSize(10);
+  doc.setTextColor(200, 200, 200);
+  doc.text(`Generated ${new Date().toLocaleDateString('en-US', {month:'long',day:'numeric',year:'numeric'})}`, margin + contentWidth - 80, margin + 45);
+  
+  // Divider line
+  doc.setDrawColor(245, 158, 11);
+  doc.setLineWidth(0.5);
+  doc.line(margin, margin + 55, margin + contentWidth, margin + 55);
+  
+  // Name Section
+  let y = margin + 70;
+  doc.setFontSize(32);
+  doc.setTextColor(0, 0, 0);
+  doc.setFont('helvetica', 'bold');
+  doc.text(name, margin + contentWidth / 2, y, {align:'center'});
+  
+  y += 20;
+  doc.setFontSize(10);
+  doc.setTextColor(100, 100, 100);
+  doc.text('Brand Name', margin + contentWidth / 2, y, {align:'center'});
+  
+  // Taglines Section
+  y += 15;
+  doc.setFontSize(11);
+  doc.setTextColor(0, 0, 0);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Brand Taglines', margin, y);
+  
+  y += 8;
+  doc.setFontSize(10);
+  doc.setTextColor(80, 80, 80);
+  data.taglines.forEach((tag, idx) => {
+    doc.text(`"${tag}"`, margin + 8, y + (idx * 6));
+  });
+  
+  // Color Palette Section
+  y += data.taglines.length * 6 + 15;
+  doc.setFontSize(11);
+  doc.setTextColor(0, 0, 0);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Color Palette — ' + data.palette.name, margin, y);
+  
+  y += 8;
+  // Color swatches
+  const colorSize = 25;
+  const colorGap = 8;
+  const startX = margin;
+  data.palette.colors.forEach((color, idx) => {
+    doc.setFillColor(color);
+    doc.roundedRect(startX + (idx * (colorSize + colorGap)), y, colorSize, colorSize, 2);
+    // Hex label below each color
+    doc.setFontSize(8);
+    doc.setTextColor(100, 100, 100);
+    doc.text(color, startX + (idx * (colorSize + colorGap)) + colorSize / 2, y + colorSize + 6, {align:'center'});
+  });
+  
+  // Audience Section
+  y += colorSize + 25;
+  doc.setFontSize(11);
+  doc.setTextColor(0, 0, 0);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Target Audience', margin, y);
+  
+  y += 8;
+  doc.setFontSize(10);
+  doc.setTextColor(80, 80, 80);
+  const audienceLines = doc.splitTextToSize(data.audience, contentWidth - 10, 10);
+  audienceLines.forEach(line => doc.text(line, margin + 5, y + (audienceLines.indexOf(line) * 5)));
+  
+  // Positioning Section
+  y += audienceLines.length * 5 + 15;
+  doc.setFontSize(11);
+  doc.setTextColor(0, 0, 0);
+  doc.setFont('helvetica', 'bold');
+  doc.text('Brand Positioning', margin, y);
+  
+  y += 8;
+  doc.setFontSize(10);
+  doc.setTextColor(80, 80, 80);
+  const positionLines = doc.splitTextToSize(data.positioning, contentWidth - 10, 10);
+  positionLines.forEach(line => doc.text(line, margin + 5, y + (positionLines.indexOf(line) * 5)));
+  
+  // Footer
+  const footerY = 270;
+  doc.setFillColor(245, 245, 245);
+  doc.rect(margin, footerY - 8, contentWidth, 8);
+  doc.setFontSize(8);
+  doc.setTextColor(150, 150, 150);
+  doc.text('Generated by NameForge v2.0 — https://atalovesyou.github.io/nameforge/', margin + contentWidth / 2, footerY - 4, {align:'center'});
+  
+  // Save PDF
+  doc.save(`${name.toLowerCase().replace(/\s+/g, '-')}-brand-kit.pdf`);
+  
+  // Increment export counter
+  const exportCount = parseInt(localStorage.getItem('nameforge_exports') || '0') + 1;
+  localStorage.setItem('nameforge_exports', exportCount.toString());
+  updateStats();
+  showToast('Brand kit PDF downloaded!');
+}
+
+// ==================== COMPARE MODE ====================
+let compareList = [];
+
+function toggleCompare(name) {
+  if (compareList.includes(name)) {
+    compareList = compareList.filter(n => n !== name);
+  } else if (compareList.length < 4) {
+    compareList.push(name);
+  } else {
+    showToast('Max 4 names can be compared');
+    return;
+  }
+  updateComparePanel();
+}
+
+function updateComparePanel() {
+  const panel = document.getElementById('comparePanel');
+  const grid = document.getElementById('compareGrid');
+  
+  if (compareList.length < 2) {
+    panel.classList.add('hidden');
+    return;
+  }
+  
+  panel.classList.remove('hidden');
+  const compareData = currentResults.filter(r => compareList.includes(r.name));
+  
+  grid.innerHTML = compareData.map(r => `
+    <div class="card p-4">
+      <h4 class="font-bold text-lg mb-2">${r.name}</h4>
+      <p class="text-sm text-gray-400 font-mono mb-3">${r.domain}</p>
+      <div class="space-y-2 text-sm">
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-gray-500">Tagline:</span>
+          <span class="text-gray-300 italic">"${r.taglines[0]}"</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-gray-500">Score:</span>
+          <span class="font-semibold ${getScoreClass(r.score)}">${r.score}/100</span>
+        </div>
+        <div class="flex items-center gap-2">
+          <span class="text-xs text-gray-500">Style:</span>
+          <span class="text-amber-400">${r.style}</span>
+        </div>
+      </div>
+    </div>
+  `).join('');
+}
+
+function clearCompare() {
+  compareList = [];
+  document.getElementById('comparePanel').classList.add('hidden');
+  document.querySelectorAll('.compare-btn').forEach(btn => btn.classList.remove('selected'));
+}
+
+// ==================== INIT ====================
+updateFavoritesBar();
+updateStats(); // Load history stats on init
+updateHistoryDashboard(); // Load history on init
 </script>
+
+<!-- GoatCounter Analytics -->
+<script data-goatcounter="https://nameforge.goatcounter.com/count"></script>
 
 
     <!-- Cross-Promotion: OpenSphere Labs -->
